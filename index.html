@@ -85,7 +85,9 @@
   .rt-史诗{background:#efe3f5;color:#9a5bb0}
   .rt-传说{background:#f5e9cf;color:#9a7b2d}
   #reportCard{text-align:left;background:var(--bg);border:1px dashed var(--gold);border-radius:10px;padding:10px 12px;margin:10px 0 0;}
-  #repBody{white-space:pre-line;margin-top:6px;}
+  .reportHead{display:flex;justify-content:space-between;align-items:center;gap:8px;color:var(--gold);font-size:12px;font-weight:700;letter-spacing:1px;}
+  .reportHint{font-size:11px;color:var(--sub);font-weight:400;letter-spacing:0;}
+  #repSummary{margin-top:5px;font-size:12px;line-height:1.75;color:var(--ink);}
   .modal{position:fixed;inset:0;background:rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;z-index:9;padding:14px;cursor:pointer;}
   .modal .inner{position:relative;background:var(--card);border-radius:14px;max-width:420px;width:100%;max-height:86vh;overflow-y:auto;overscroll-behavior:contain;padding:44px 18px 18px;cursor:default;box-shadow:0 12px 36px rgba(50,40,20,.18);}
   .modalX{position:absolute;top:9px;right:10px;width:32px;height:32px;border:1px solid var(--line);border-radius:50%;background:var(--bg);color:var(--sub);font-size:22px;line-height:26px;cursor:pointer;}
@@ -238,8 +240,8 @@
           <span>轮回残念 <b id="resPity">+0</b></span>
         </div>
         <div id="reportCard">
-          <div style="font-size:12px;font-weight:700;color:var(--gold);letter-spacing:1px">⚔ 一世战报</div>
-          <div class="small" id="repBody"></div>
+          <div class="reportHead"><span>⚔ 一世摘要</span><span class="reportHint">详细经历已收录</span></div>
+          <div id="repSummary"></div>
         </div>
         <div class="discoveries hide" id="deathMoment">
           <div class="small">🕯 临终的话</div>
@@ -254,7 +256,7 @@
             <button class="btn ghost" id="btnQuoteSkip">沉默飞升</button>
           </div>
         </div>
-        <button class="btn ghost" id="btnCopyReport">📋 复制战报文本</button>
+        <button class="btn ghost" id="btnCopyReport">📋 复制完整战报</button>
         <button class="btn ghost" id="btnReview">📜 回顾这一世</button>
         <button class="btn" id="btnAgain">再入轮回</button>
         <button class="btn ghost" id="btnBackHome">返回</button>
@@ -1697,18 +1699,18 @@ function ascendProgress(eKey){
   const atPeak=rank===9&&stage===3;
   const T=threshold(rank,stage);
   const stageRatio=atPeak?0:Math.max(0,Math.min(1,(Number(S&&S.prog)||0)/Math.max(1,T)));
-  const score=immortal||peak?total:Math.min(total,(rank-1)*4+stage+stageRatio);
-  const pct=immortal||peak?100:Math.max(1,Math.min(99,Math.round(score/total*100)));
+  const score=immortal?total:peak?total-0.36:Math.min(total,(rank-1)*4+stage+stageRatio);
+  const pct=immortal?100:peak?99:Math.max(1,Math.min(99,Math.round(score/total*100)));
   const stageLabel=immortal
     ? "✅ 已完成：永生之门已为你打开"
     : peak
-      ? "已抵达：九转蛊仙·巅峰"
+      ? "已抵达：九转蛊仙·巅峰（未渡永生劫）"
       : `当前：${RANKS[rank-1]}·${STAGES[stage]}`;
   let hint;
   if(immortal){
     hint="本世已跨过永生门槛，人生档案已收入永生殿堂。";
   }else if(peak){
-    hint="你已站在永生门前，本次渡劫未能叩门；这是距离飞升最近的一步。";
+    hint="你已站在永生门前，本次渡劫未能叩门；距离真正飞升只差最后一道天关。";
   }else if(rank>=9){
     hint="九转巅峰已至，下一步便是积蓄底蕴、冲击永生。";
   }else if(cap<9){
@@ -1874,7 +1876,8 @@ function endLife(key){
     storeArchive(archive);
     if(meta.hall[0]&&meta.hall[0].archiveId===archiveId) meta.hall[0].archiveId=archive.id;
   }
-  $("repBody").textContent = buildReport(key);
+  const summaryAscend=ascendProgress(key), summaryStory=storyStats();
+  $("repSummary").textContent=`终境「${RANKS[S.rank-1]}」 · 享年 ${S.age} 岁 · 飞升进度 ${summaryAscend.pct}% · 关键经历 ${S.keys.length} 条 · 故事 ${summaryStory.found} 条`;
   // 升级
   while(meta.exp>=levelExp(meta.level)){ meta.exp-=levelExp(meta.level); meta.level++; }
   save();
@@ -2200,7 +2203,7 @@ $("btnHi").onclick=()=>{
 $("btnCloseReview").onclick=()=>$("reviewModal").classList.add("hide");
 $("btnCopyReport").onclick=()=>{
   if(!lastReportText) return;
-  const done=()=>{ $("btnCopyReport").textContent="✅ 已复制，去粘贴给道友吧"; setTimeout(()=>$("btnCopyReport").textContent="📋 复制战报文本",1500); };
+  const done=()=>{ $("btnCopyReport").textContent="✅ 已复制，去粘贴给道友吧"; setTimeout(()=>$("btnCopyReport").textContent="📋 复制完整战报",1500); };
   if(navigator.clipboard && navigator.clipboard.writeText){
     navigator.clipboard.writeText(lastReportText).then(done).catch(()=>{ fallbackCopy(lastReportText); done(); });
   }else{ fallbackCopy(lastReportText); done(); }
