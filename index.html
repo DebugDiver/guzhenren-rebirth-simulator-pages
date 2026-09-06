@@ -71,6 +71,13 @@
   #resultArea .good .ending{color:var(--gold);}
   .rewards{display:flex;justify-content:center;gap:16px;margin:12px 0;font-size:13px;}
   .rewards b{color:var(--accent);}
+  .ascendCard{text-align:left;margin:12px 0 0;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:linear-gradient(135deg,#fbf7eb,#f5edd8);}
+  .ascendCard.complete{border-color:var(--gold);background:linear-gradient(135deg,#fff8df,#f5e5ad);}
+  .ascendHead{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:700;color:var(--gold);letter-spacing:1px;}
+  .ascendHead b{font-size:14px;letter-spacing:0;}
+  .ascendTrack{height:9px;margin:8px 0 6px;border-radius:8px;overflow:hidden;background:#e9e0cc;box-shadow:inset 0 1px 2px rgba(80,60,20,.12);}
+  .ascendTrack i{display:block;height:100%;width:0;border-radius:8px;background:linear-gradient(90deg,#a98639,#d4ae55);transition:width .45s ease;}
+  .ascendCard.complete .ascendTrack i{background:linear-gradient(90deg,#a98639,#f0c85b);}
   .rtag{display:inline-block;font-size:11px;border-radius:8px;padding:1px 8px;vertical-align:middle;letter-spacing:1px;font-weight:600;}
   .rt-普通{background:#eee7d6;color:#8a8172}
   .rt-优良{background:#e2efe4;color:#4a7c59}
@@ -219,6 +226,12 @@
         <div class="ending" id="resEnding"></div>
         <div><span class="rtag hide" id="resRarity"></span></div>
         <div class="small" id="resDetail"></div>
+        <div class="ascendCard" id="resAscendCard">
+          <div class="ascendHead"><span>🗻 本世飞升进度</span><b id="resAscendPct">--</b></div>
+          <div class="ascendTrack"><i id="resAscendBar"></i></div>
+          <div class="small" id="resAscendStage"></div>
+          <div class="small" id="resAscendHint"></div>
+        </div>
         <div class="rewards">
           <span>蝉鸣记忆 <b id="resExp">+0</b></span>
           <span>轮回残念 <b id="resPity">+0</b></span>
@@ -1673,11 +1686,52 @@ function nextGoal(){
   for(const k of GOAL_ORDER){ if(!meta.codexEnd[k]) return `解锁「${ENDINGS[k].n}」：${ENDINGS[k].h}`; }
   return "结局图鉴已集齐，静待新篇章";
 }
+function ascendProgress(eKey){
+  const immortal=eKey==="dukai"||eKey==="tianqi";
+  const peak=eKey==="zuisu";
+  const total=9*4;
+  const cap=S&&S.apt?S.apt.cap:9;
+  const rank=Math.max(1,Math.min(9,Number(S&&S.rank)||1));
+  const stage=Math.max(0,Math.min(3,Number(S&&S.stage)||0));
+  const atPeak=rank===9&&stage===3;
+  const T=threshold(rank,stage);
+  const stageRatio=atPeak?0:Math.max(0,Math.min(1,(Number(S&&S.prog)||0)/Math.max(1,T)));
+  const score=immortal||peak?total:Math.min(total,(rank-1)*4+stage+stageRatio);
+  const pct=immortal||peak?100:Math.max(1,Math.min(99,Math.round(score/total*100)));
+  const stageLabel=immortal
+    ? "✅ 已完成：永生之门已为你打开"
+    : peak
+      ? "已抵达：九转蛊仙·巅峰"
+      : `当前：${RANKS[rank-1]}·${STAGES[stage]}`;
+  let hint;
+  if(immortal){
+    hint="本世已跨过永生门槛，人生档案已收入永生殿堂。";
+  }else if(peak){
+    hint="你已站在永生门前，本次渡劫未能叩门；这是距离飞升最近的一步。";
+  }else if(rank>=9){
+    hint="九转巅峰已至，下一步便是积蓄底蕴、冲击永生。";
+  }else if(cap<9){
+    hint=`距离九转巅峰还差 ${9-rank} 转；本世资质预示上限为${cap}转，需靠改命或天授机缘突破。`;
+  }else{
+    hint=`距离九转巅峰还差 ${9-rank} 转境界；当前阶段突破进度 ${Math.floor(stageRatio*100)}%。`;
+  }
+  return {pct,stageLabel,hint,complete:immortal};
+}
+function renderAscendProgress(eKey){
+  const p=ascendProgress(eKey);
+  $("resAscendCard").classList.toggle("complete",p.complete);
+  $("resAscendPct").textContent=p.pct+"%";
+  $("resAscendBar").style.width=p.pct+"%";
+  $("resAscendStage").textContent=p.stageLabel;
+  $("resAscendHint").textContent=p.hint;
+}
 function buildReport(eKey){
   const e=ENDINGS[eKey];
   const lines=[];
   lines.push(`资质 ${S.apt.k==="十绝"?"十绝体":S.apt.k+"等"} · 本命蛊「${S.gu.n}」（${S.gu.r}·${S.gu.c}）`);
   lines.push(`道心人格「${S.persona.n}」${S.persona.k} · 终境 ${RANKS[S.rank-1]} · 享年 ${S.age} 岁${S.path!=="散修"?` · 道途「${S.path}」`:""}`);
+  const ap=ascendProgress(eKey);
+  lines.push(`飞升路程：${ap.pct}% · ${ap.stageLabel.replace("✅ ","")}`);
   lines.push(`结局「${e.n}」· 稀有度：${e.r}`);
   const keys=topKeys();
   if(keys.length){ lines.push("关键经历："); keys.forEach(t=>lines.push(`· ${t}`)); }
@@ -1823,6 +1877,7 @@ function endLife(key){
   $("resEnding").textContent=e.n;
   const rt=$("resRarity"); rt.textContent=e.r; rt.className="rtag rt-"+e.r; rt.classList.remove("hide");
   $("resDetail").textContent=`${e.d} —— 命蛊「${S.gu.n}」·${S.apt.k}等资质，终境「${RANKS[S.rank-1]}」，享年 ${S.age} 岁${S.path!=="散修"?`，道途「${S.path}」`:""}`;
+  renderAscendProgress(key);
   $("resExp").textContent="+"+expGain;
   $("resPity").textContent="+"+pityGain;
   const fresh=(S.storyNew||[]).slice(0,6);
