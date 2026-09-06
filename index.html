@@ -69,7 +69,7 @@
   #resultArea{text-align:center;}
   #resultArea .ending{font-size:24px;font-weight:700;letter-spacing:4px;margin:8px 0;}
   #resultArea .good .ending{color:var(--gold);}
-  .rewards{display:flex;justify-content:center;gap:16px;margin:12px 0;font-size:13px;}
+  .rewards{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin:12px 0;font-size:13px;}
   .rewards b{color:var(--accent);}
   .ascendCard{text-align:left;margin:12px 0 0;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:linear-gradient(135deg,#fbf7eb,#f5edd8);}
   .ascendCard.complete{border-color:var(--gold);background:linear-gradient(135deg,#fff8df,#f5e5ad);}
@@ -155,7 +155,7 @@
         <div class="small" style="margin-top:8px">每一世，你将随机觉醒<b>空窍资质</b>与<b>本命蛊</b>：丁乙丙甲四等资质决定你能修到几转；从一转蛊师到九转蛊仙——寿元不随境界增长，想活得更久，去寻<b>寿蛊</b>。</div>
         <div class="small" style="margin-top:8px">本局玩法：<b>命运抉择</b>——人生途中你将亲手决定几次走向；30 种本命蛊各有<b>流派特性</b>（保命/机缘/攻伐/邪蛊/轮回）。</div>
         <div class="small" style="margin-top:8px">本局最多牵引<b>两段往事</b>：每段故事会经历五个章节、四个分支，并在最后留下两种不同结局。故事选择与命运选择共用同一套手动/自动/关闭设置。</div>
-        <div class="small" style="margin-top:8px">每一世终结后，<b>春秋蝉的残鸣</b>不会消散：记忆越深，下一世觉醒高资质的概率越高；积攒<b>轮回残念</b>，可换一次必得高资质的转世，也可点亮永久天赋。</div>
+        <div class="small" style="margin-top:8px">每一世终结后，<b>春秋蝉的残鸣</b>不会消散：记忆越深，下一世觉醒高资质的概率越高；积攒<b>轮回残念</b>可换一次必得高资质的转世，升级获得的<b>轮回点</b>用于点亮永久天赋。</div>
         <div class="small" style="margin-top:4px">📖 非商业同人试玩，仅供学习交流；与原作者、出版社及版权方无关。原作相关名称与设定权利归其权利人所有。</div>
         <div class="small" style="margin-top:10px">🔮 抉择开关（命运抉择通常 2~3 次，故事分支另计）：手动=暂停等你选；自动=由天机代选不暂停；关闭=纯自动流转</div>
         <div class="seg" id="choiceModeCtl">
@@ -238,6 +238,7 @@
         <div class="rewards">
           <span>蝉鸣记忆 <b id="resExp">+0</b></span>
           <span>轮回残念 <b id="resPity">+0</b></span>
+          <span>轮回点 <b id="resTalent">+0</b></span>
         </div>
         <div id="reportCard">
           <div class="reportHead"><span>⚔ 一世摘要</span><span class="reportHint">详细经历已收录</span></div>
@@ -325,10 +326,10 @@
     </div>
     <div id="codexPaneMeta" class="hide">
       <div class="small" id="codexMetaSummary"></div>
-      <div class="talentHint">轮回道树是永久局外成长：命、缘、道、藏、运五条路共二十个节点。点亮后会作用于之后所有对局，只改变方向、信息和下限，不会把每一世变成固定剧本。轮回残念也可以继续用于 100 点高资质保底。</div>
+      <div class="talentHint">轮回道树是永久局外成长：命、缘、道、藏、运五条路共二十个节点。点亮后会作用于之后所有对局，只改变方向、信息和下限，不会把每一世变成固定剧本。升级获得的轮回点用于点亮天赋，轮回残念只用于 100 点高资质保底。</div>
       <div class="codexSectionTitle">轮回道树 · 永久天赋</div>
       <div id="codexTalent"></div>
-      <button class="btn ghost" id="btnResetTalents">洗去已点天赋（返还 80% 残念）</button>
+      <button class="btn ghost" id="btnResetTalents">洗去已点天赋（返还 80% 轮回点）</button>
       <div class="codexSectionTitle">诸相记录</div>
       <div id="codexPeople"></div>
       <div class="codexSectionTitle">牵挂名录 · 跨世重逢</div>
@@ -348,10 +349,10 @@
     <button class="modalX" type="button" data-close-modal="metaModal" aria-label="关闭轮回道树">×</button>
     <h3>🧭 轮回道树 <span style="font-size:11px;color:var(--sub)">局外养成</span></h3>
     <div class="small" id="metaSummary"></div>
-    <div class="talentHint">这里保存的是跨越轮回的积累。命、缘、道、藏、运五条路共二十个节点，点亮后永久生效；轮回残念也可继续用于高资质保底。你可以随时洗点，但会损失一部分残念。</div>
+    <div class="talentHint">这里保存的是跨越轮回的积累。命、缘、道、藏、运五条路共二十个节点，点亮后永久生效；每次升级都会获得轮回点，轮回残念只用于高资质保底。你可以随时洗点，但会损失一部分轮回点。</div>
     <div class="codexSectionTitle">轮回道树 · 永久天赋</div>
     <div id="metaTalent"></div>
-    <button class="btn ghost" id="btnResetTalentsStandalone">洗去已点天赋（返还 80% 残念）</button>
+    <button class="btn ghost" id="btnResetTalentsStandalone">洗去已点天赋（返还 80% 轮回点）</button>
     <div class="codexSectionTitle">诸相记录</div>
     <div id="metaPeople"></div>
     <div class="codexSectionTitle">牵挂名录 · 跨世重逢</div>
@@ -1092,7 +1093,17 @@ const TALENT_TREES = [
 ];
 const TALENT_IDS=TALENT_TREES.reduce((a,t)=>a.concat(t.talents.map(x=>x.id)),[]);
 function talentOwned(id){ return !!(meta.talents&&meta.talents[id]); }
-function talentSpent(){ return TALENT_TREES.reduce((sum,t)=>sum+t.talents.reduce((n,x)=>n+(talentOwned(x.id)?x.cost:0),0),0); }
+function talentSpentFrom(raw){
+  raw=raw&&typeof raw==="object"?raw:{};
+  return TALENT_TREES.reduce((sum,t)=>sum+t.talents.reduce((n,x)=>n+(raw[x.id]?x.cost:0),0),0);
+}
+function talentSpent(){ return talentSpentFrom(meta.talents); }
+/* 每次升级至少 10 点；到达 5 的倍数时再给 15 点里程碑奖励。 */
+function talentPointGain(level){ return 10+(Number(level)%5===0?15:0); }
+function talentPointsEarned(level){
+  const lv=Math.max(1,Math.floor(Number(level)||1));
+  return 10*(lv-1)+15*Math.floor(lv/5);
+}
 function talentById(id){
   for(const tree of TALENT_TREES){ const found=tree.talents.find(x=>x.id===id); if(found) return found; }
   return null;
@@ -1126,7 +1137,7 @@ function normalizeMap(raw){
 
 /* ============ 存档 ============ */
 const SAVE_KEY = "guzhenren_save_v1";
-const SAVE_VERSION = 7;
+const SAVE_VERSION = 8;
 const ARCHIVE_LIMIT = 80;
 let meta = load();
 function emptyStory(){ return {chains:{}, moments:{}, trail:"", milestones:{}, pages:0}; }
@@ -1187,9 +1198,15 @@ function normalizeDeathCodex(raw){
 }
 function normalizeSave(s){
   if(!s || typeof s !== "object" || !Number.isFinite(s.exp) || !Number.isFinite(s.level)) return null;
+  const savedLevel=Math.max(1,Math.floor(s.level));
+  const savedTalentPoints=Number(s.talentPoints);
+  /* v7 以前天赋消耗的是残念：保留已点天赋，并把旧等级对应的未消费额度迁移为轮回点。 */
+  const talentPoints=Number.isFinite(savedTalentPoints)
+    ? Math.max(0,Math.floor(savedTalentPoints))
+    : Math.max(0,talentPointsEarned(savedLevel)-talentSpentFrom(s.talents));
   return {
     saveVersion:SAVE_VERSION,
-    exp:Math.max(0,s.exp), level:Math.max(1,s.level), pity:Math.max(0,s.pity||0),
+    exp:Math.max(0,s.exp), level:savedLevel, talentPoints, pity:Math.max(0,s.pity||0),
     runs:Math.max(0,s.runs||0), codexGu:(s.codexGu&&typeof s.codexGu==="object")?s.codexGu:{},
     codexEnd:(s.codexEnd&&typeof s.codexEnd==="object")?s.codexEnd:{},
     hall:Array.isArray(s.hall)?s.hall.slice(0,200):[], archives:normalizeArchives(s.archives), talents:normalizeSeenMap(s.talents,TALENT_IDS,TALENT_IDS.length),
@@ -1204,7 +1221,7 @@ function load(){
     const normalized=normalizeSave(s);
     if(normalized) return normalized;
   }catch(e){}
-  return {saveVersion:SAVE_VERSION,exp:0,level:1,pity:0,runs:0,codexGu:{},codexEnd:{},hall:[],archives:[],talents:{},codexApt:{},codexPersona:{},codexPath:{},codexDeath:{},story:emptyStory(),bonds:[],achievements:{},titles:{},equippedTitle:"",choiceMode:"manual"};
+  return {saveVersion:SAVE_VERSION,exp:0,level:1,talentPoints:0,pity:0,runs:0,codexGu:{},codexEnd:{},hall:[],archives:[],talents:{},codexApt:{},codexPersona:{},codexPath:{},codexDeath:{},story:emptyStory(),bonds:[],achievements:{},titles:{},equippedTitle:"",choiceMode:"manual"};
 }
 function save(){ meta.saveVersion=SAVE_VERSION; localStorage.setItem(SAVE_KEY,JSON.stringify(meta)); }
 function exportSave(){
@@ -1263,6 +1280,7 @@ function renderMeta(){
   $("metaBar").innerHTML =
     `<span class="chip">春秋蝉残鸣 Lv.${meta.level}</span>`+
     `<span class="chip">记忆经验 ${meta.exp}/${need}</span>`+
+    `<span class="chip">轮回点 ${meta.talentPoints||0}</span>`+
     `<span class="chip">轮回残念 ${meta.pity}（100可保底）</span>`+
     `<span class="chip">转世 ${meta.runs} 次</span>`+
     `<span class="chip">👑 证得永生 ${meta.hall.length} 次</span>`+
@@ -1925,7 +1943,14 @@ function endLife(key){
   const summaryAscend=ascendProgress(key), summaryStory=storyStats();
   $("repSummary").textContent=`终境「${RANKS[S.rank-1]}」 · 享年 ${S.age} 岁 · 飞升进度 ${summaryAscend.pct}% · 关键经历 ${S.keys.length} 条 · 故事 ${summaryStory.found} 条`;
   // 升级
-  while(meta.exp>=levelExp(meta.level)){ meta.exp-=levelExp(meta.level); meta.level++; }
+  let talentGain=0;
+  while(meta.exp>=levelExp(meta.level)){
+    meta.exp-=levelExp(meta.level);
+    meta.level++;
+    const gain=talentPointGain(meta.level);
+    meta.talentPoints=(meta.talentPoints||0)+gain;
+    talentGain+=gain;
+  }
   save();
   $("resEnding").textContent=e.n;
   const rt=$("resRarity"); rt.textContent=e.r; rt.className="rtag rt-"+e.r; rt.classList.remove("hide");
@@ -1933,6 +1958,7 @@ function endLife(key){
   renderAscendProgress(key);
   $("resExp").textContent="+"+expGain;
   $("resPity").textContent="+"+pityGain;
+  $("resTalent").textContent="+"+talentGain;
   $("deathMoment").classList.toggle("hide",!lastDeathText);
   $("resDeathText").textContent=lastDeathText;
   if(pendingAscend){
@@ -1995,11 +2021,11 @@ function renderTalentPane(scope){
   const summaryEl=$(ids.summary), talentEl=$(ids.talent), resetEl=$(ids.reset);
   if(!summaryEl||!talentEl) return;
   const total=TALENT_IDS.length, owned=TALENT_IDS.filter(talentOwned).length, spent=talentSpent();
-  summaryEl.textContent="轮回残念 "+meta.pity+" · 永久天赋 "+owned+"/"+total+" · 已投入 "+spent+" 点 · 故事 "+storyStats().found+"/"+Object.keys(STORY_META).length+" · 牵挂 "+(meta.bonds?meta.bonds.length:0)+" · 道号 "+Object.keys(meta.titles||{}).length;
+  summaryEl.textContent="轮回点 "+(meta.talentPoints||0)+" · 轮回残念 "+meta.pity+"（保底） · 永久天赋 "+owned+"/"+total+" · 已投入 "+spent+" 点 · 故事 "+storyStats().found+"/"+Object.keys(STORY_META).length+" · 牵挂 "+(meta.bonds?meta.bonds.length:0)+" · 道号 "+Object.keys(meta.titles||{}).length;
   talentEl.innerHTML=TALENT_TREES.map(tree=>{
     const cards=tree.talents.map(t=>{
-      const own=talentOwned(t.id), ready=!t.requires||talentOwned(t.requires), can=!own&&ready&&meta.pity>=t.cost;
-      const action=own?"<span>已点亮 · 永久生效</span>":(!ready?"<span>需先点亮上一层</span>":"<button data-talent-id=\""+t.id+"\" "+(can?"":"disabled")+">"+(can?"消耗 "+t.cost+" 点":"残念不足")+"</button>");
+      const own=talentOwned(t.id), ready=!t.requires||talentOwned(t.requires), can=!own&&ready&&(meta.talentPoints||0)>=t.cost;
+      const action=own?"<span>已点亮 · 永久生效</span>":(!ready?"<span>需先点亮上一层</span>":"<button data-talent-id=\""+t.id+"\" "+(can?"":"disabled")+">"+(can?"消耗 "+t.cost+" 点":"轮回点不足")+"</button>");
       return "<div class=\"talentCard "+(own?"on":(!ready?"locked":""))+"\"><div class=\"talentName\">"+(own?"✦ ":"")+t.name+" <span class=\"tag\">第"+t.tier+"层</span></div><div class=\"talentDesc\">"+t.desc+"</div><div class=\"talentCost\"><span>永久天赋</span>"+action+"</div></div>";
     }).join("");
     return "<div class=\"talentTree\"><div class=\"talentTreeHead\"><span>"+tree.icon+" "+tree.name+"道</span><small>"+tree.desc+"</small></div>"+cards+"</div>";
@@ -2012,8 +2038,8 @@ function renderTalentPane(scope){
 }
 function buyTalent(id){
   const t=talentById(id);
-  if(!t||talentOwned(id)|| (t.requires&&!talentOwned(t.requires)) || meta.pity<t.cost) return;
-  meta.pity-=t.cost;
+  if(!t||talentOwned(id)|| (t.requires&&!talentOwned(t.requires)) || (meta.talentPoints||0)<t.cost) return;
+  meta.talentPoints-=t.cost;
   if(!meta.talents) meta.talents={};
   meta.talents[id]=true;
   save(); renderMeta(); renderCodex(); renderStandaloneMeta();
@@ -2022,8 +2048,8 @@ function resetTalents(){
   const spent=talentSpent();
   if(!spent) return;
   const refund=Math.floor(spent*.8);
-  if(!confirm("确定洗去全部永久天赋吗？将返还 "+refund+" 点轮回残念。")) return;
-  meta.pity+=refund; meta.talents={}; save(); renderMeta(); renderCodex(); renderStandaloneMeta();
+  if(!confirm("确定洗去全部永久天赋吗？将返还 "+refund+" 点轮回点。")) return;
+  meta.talentPoints=(meta.talentPoints||0)+refund; meta.talents={}; save(); renderMeta(); renderCodex(); renderStandaloneMeta();
 }
 function renderMetaCodex(scope){
   scope=scope==="meta"?"meta":"codex";
