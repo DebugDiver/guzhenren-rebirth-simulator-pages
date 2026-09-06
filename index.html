@@ -122,6 +122,7 @@
   .discoveries{margin-top:10px;padding:10px;border:1px solid var(--gold);border-radius:10px;background:#fbf4df;text-align:left;}
   .discoveries .small{color:var(--gold);font-weight:700;}
   .discoveries div{font-size:12px;line-height:1.7;color:#6b5a36;}
+  .discoveries .deathText{margin-top:6px;font-size:14px;line-height:1.9;color:var(--ink);}
   .small{font-size:11px;color:var(--sub);line-height:1.8;}
   .destiny{margin-top:10px;padding:10px;border-radius:10px;background:linear-gradient(135deg,#fdf6e3,#f5e5ae);border:1px solid var(--gold);color:var(--gold);font-weight:700;letter-spacing:2px;text-align:center;font-size:14px;animation:glow 1s ease-in-out infinite alternate;}
   @keyframes glow{from{box-shadow:0 0 4px rgba(154,123,45,.25)}to{box-shadow:0 0 20px rgba(154,123,45,.85)}}
@@ -240,9 +241,9 @@
           <div style="font-size:12px;font-weight:700;color:var(--gold);letter-spacing:1px">⚔ 一世战报</div>
           <div class="small" id="repBody"></div>
         </div>
-        <div class="discoveries hide" id="storyDiscoveries">
-          <div class="small">📜 往事录新页</div>
-          <div id="storyNewList"></div>
+        <div class="discoveries hide" id="deathMoment">
+          <div class="small">🕯 临终的话</div>
+          <div class="deathText" id="resDeathText"></div>
         </div>
         <div class="hide" id="quoteBox">
           <div class="small">🕊 留一道音给后世（≤200 字，可沉默飞升）</div>
@@ -1317,7 +1318,7 @@ function doDraw(auto){
 
 /* ============ 人生模拟 ============ */
 let S=null, timer=null, speed=1, finished=false, ending=false, _ff=false;
-let lastRunLog="", lastRunHi="", lastRunTitle="", lastReportText="";
+let lastRunLog="", lastRunHi="", lastRunTitle="", lastReportText="", lastDeathText="";
 function showDestiny(txt){
   const d=$("destiny"); d.textContent=txt; d.classList.remove("hide");
 }
@@ -1735,6 +1736,7 @@ function buildReport(eKey){
   lines.push(`结局「${e.n}」· 稀有度：${e.r}`);
   const keys=topKeys();
   if(keys.length){ lines.push("关键经历："); keys.forEach(t=>lines.push(`· ${t}`)); }
+  if(lastDeathText) lines.push(`临终的话：${lastDeathText}`);
   lines.push(`图鉴：命蛊 ${Object.keys(meta.codexGu).length}/${GUS.length} · 结局 ${Object.keys(meta.codexEnd).length}/${Object.keys(ENDINGS).length}`);
   const ss=storyStats();
   lines.push(`往事录：${ss.done}/${Object.keys(STORY_META).length} 条故事写完 · ${ss.found} 条已遇见 · ${ss.branches} 个分支`);
@@ -1812,6 +1814,7 @@ function updateAchievements(){
 }
 function endLife(key){
   finished=true; ending=false; clearInterval(timer);
+  lastDeathText="";
   if(key==="tianqi") S.rank=Math.max(S.rank,9);   // 天授永生按九转结算
   const e=ENDINGS[key];
   meta.codexEnd[key]=true;
@@ -1852,6 +1855,7 @@ function endLife(key){
     const firstDeath=!meta.codexDeath[key].includes(death);
     if(firstDeath) meta.codexDeath[key].push(death);
     if(firstDeath&&talentOwned("cang_4")){meta.pity+=2;storyNew(`临终簿：首次读到「${e.n}」的新句，得残念 2`);}
+    lastDeathText=death;
     addLog(death, 3);
   }
   captureBond();
@@ -1880,9 +1884,8 @@ function endLife(key){
   renderAscendProgress(key);
   $("resExp").textContent="+"+expGain;
   $("resPity").textContent="+"+pityGain;
-  const fresh=(S.storyNew||[]).slice(0,6);
-  $("storyDiscoveries").classList.toggle("hide",fresh.length===0);
-  $("storyNewList").innerHTML=fresh.map(x=>`<div>· ${escapeHTML(x)}</div>`).join("");
+  $("deathMoment").classList.toggle("hide",!lastDeathText);
+  $("resDeathText").textContent=lastDeathText;
   if(pendingAscend){
     $("quoteInput").value=""; $("quoteCnt").textContent="0/200";
     $("quoteBox").classList.remove("hide");
