@@ -1728,6 +1728,50 @@ function renderAscendProgress(eKey){
   $("resAscendStage").textContent=p.stageLabel;
   $("resAscendHint").textContent=p.hint;
 }
+/*
+ * 原著彩蛋只写进结算摘要，不改变数值，也不伪装成主线剧情。
+ * 用本世信息做稳定取样，buildReport/buildShareText 多次调用时不会换台词。
+ */
+ function novelEasterEggs(eKey){
+   if(!S) return [];
+   const keyText=(S.keys||[]).map(x=>String(x&&x.t||"")).join("|");
+   const haystack=[keyText,S.gu&&S.gu.n||"",S.gu&&S.gu.c||"",S.path||"",S.persona&&S.persona.k||"",eKey||""].join("|");
+   const has=(...words)=>words.some(w=>keyText.includes(w));
+   let seed=2166136261;
+   for(let i=0;i<haystack.length;i++){ seed^=haystack.charCodeAt(i); seed=Math.imul(seed,16777619); }
+   seed>>>=0;
+   const rank=Number(S.rank)||1;
+   const guName=String(S.gu&&S.gu.n||"");
+   const apt=String(S.apt&&S.apt.k||"");
+   const persona=String(S.persona&&S.persona.k||"");
+   const candidates=[
+     {id:"fangyuan", when:()=>!!S.reborn||guName==="轮回蛊"||rank>=4||has("古井窥得未来","旧世","逆天改命"), text:"茶棚散席时，你与一个姓方的青衫客擦肩。他没有报名字，只问你：若重来一次，你会改哪一步？你回头时，他已走进人群，像从未在此处停留。"},
+     {id:"chunqiuchan", when:()=>!!S.reborn||guName==="轮回蛊"||has("蝉","轮回"), text:"旧渡口忽然响起一声蝉鸣，节拍像极了传说中的春秋蝉。有人说，那是方源留在人间的一点回声；你没有追，只把这一世继续走完。"},
+     {id:"bainingbing", when:()=>/冰|寒/.test(guName)||has("寒潭","雪中药人")||S.path==="邪修"&&rank>=4, text:"雪线尽头，你见过白凝冰提剑而行。她看了你的本命蛊一眼，像是在评估一场还没开始的战斗，随后踏雪而去，连脚印都没有留下。"},
+     {id:"shangxinci", when:()=>!!S.spouse||Number(S.daoHeart||0)>=2||has("蛊市","一饭","故人来还"), text:"商队歇脚时，商心慈替一个陌生小贩解了围。她没有问你的来处，只把一枚元石推到你面前：人情若能还，就别让它烂在路上。"},
+     {id:"heiloulan", when:()=>S.path==="邪修"||apt==="甲"||has("边荒","蛊潮","北原"), text:"北原风暴前，你在营火旁见过黑楼兰。她把酒碗扣在桌上，说真正的强者不怕输，只怕把输也解释成命。"},
+     {id:"fengjiuge", when:()=>S.path==="正道"&&rank>=6||has("剑意","歌声","凤鸣"), text:"云海上有歌声压过雷声，凤九歌从飞舟边缘回眸一笑。那一瞬你明白，有些人的道不是用来赢，而是用来让后来者敢继续走。"},
+     {id:"tieruonan", when:()=>S.path==="正道"&&rank>=4||has("宿敌","查案","铁若男"), text:"一桩旧案的卷宗里，你看见铁若男留下的批注：证据不会替人修行，但会替真相活下去。你合上卷宗，第一次觉得公道也有重量。"},
+     {id:"honglian", when:()=>has("红莲","业火")||S.gu&&S.gu.c==="轮回"||rank>=8, text:"红莲魔尊的残焰在你掌心亮了一瞬。火里没有传承，只有一个背影把三千年寿数烧成了不肯熄灭的颜色。"},
+     {id:"xingxiu", when:()=>S.path==="正道"&&rank>=7||/INTJ|INTP/.test(persona)&&rank>=5, text:"星宿仙尊的棋局曾在你眼前落下一子。她没有看你，只说天道最像一盘棋：每个人都以为自己在落子，其实也在被棋局记录。"},
+     {id:"juyang", when:()=>apt==="甲"||/ESTJ|ESTP/.test(persona)||!!S.spouse&&rank>=5, text:"巨阳仙尊的金色影子从长河上空掠过。你听见他笑了一声：世间的好处从来不会自己找上门，敢伸手的人才有资格谈命。"},
+     {id:"daotian", when:()=>has("天外飞舟","古仙洞府","洞府")||S.gu&&S.gu.c==="机缘"&&rank>=5, text:"残破飞舟坠入荒原时，你在舱壁上看见盗天魔尊留下的半句批语。后半句被人挖走了，像是连他自己也不愿让后来者知道。"},
+     {id:"yuanlian", when:()=>S.gu&&S.gu.c==="保命"&&rank>=5||has("青山旧印","神木","桃树"), text:"山雨后，元莲仙尊的画卷在泥水里显出一笔青色。那笔没有画人，只画了一株被雷劈过却仍然开花的树。"},
+     {id:"tianting", when:()=>S.path==="正道"&&rank>=7||eKey==="zongshi"||eKey==="dukai", text:"你曾在中洲天庭的云门外停过片刻。门内钟声整齐得近乎冷酷，门外却有一个扫阶老人说：大道再高，也别忘了脚下这一级。"},
+     {id:"sanwang", when:()=>has("三王","福地","秘境竞逐","古窟机缘"), text:"三王福地开启的那年，你在入口处与方源留下的脚印错开半步。你没有捡走那块染血的令牌，只记住了他选择的方向。"},
+     {id:"qingmaoshan", when:()=>has("家族测灵","族中大比")||apt==="丙"||apt==="乙", text:"青茅山脚的测灵石前，你听见过方源这个名字。那时它还只是旁人口中的传闻，而你尚未决定，自己要不要成为传闻的一部分。"}
+   ];
+   const eligible=candidates.filter(x=>x.when());
+   if(!eligible.length) return [];
+   const first=eligible[seed%eligible.length];
+   const out=[first];
+   /* 少量高信息量对局会出现第二条，避免每张战报都变成角色名单。 */
+   if(eligible.length>=6 && seed%5===0){
+     const rest=eligible.filter(x=>x.id!==first.id);
+     if(rest.length) out.push(rest[(seed>>>5)%rest.length]);
+   }
+   return out.map(x=>x.text);
+ }
 function buildReport(eKey){
   const e=ENDINGS[eKey];
   const lines=[];
@@ -1738,6 +1782,8 @@ function buildReport(eKey){
   lines.push(`结局「${e.n}」· 稀有度：${e.r}`);
   const keys=topKeys();
   if(keys.length){ lines.push("关键经历："); keys.forEach(t=>lines.push(`· ${t}`)); }
+  const echoes=novelEasterEggs(eKey);
+  if(echoes.length){ lines.push("原著彩蛋（擦肩而过）："); echoes.forEach(t=>lines.push(`· ${t}`)); }
   if(lastDeathText) lines.push(`临终的话：${lastDeathText}`);
   lines.push(`图鉴：命蛊 ${Object.keys(meta.codexGu).length}/${GUS.length} · 结局 ${Object.keys(meta.codexEnd).length}/${Object.keys(ENDINGS).length}`);
   const ss=storyStats();
