@@ -1,0 +1,2208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>蛊真人 · 转生模拟器（同人试玩版）</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext y='50' font-size='48'%3E%F0%9F%90%9B%3C/text%3E%3C/svg%3E">
+<style>
+  :root{
+    --bg:#f6f2e8; --card:#fffdf7; --ink:#3b352b; --sub:#8a8172; --line:#e4dcc9;
+    --accent:#4a7c59; --accent2:#b0713a; --danger:#a5433a; --gold:#9a7b2d;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;font-family:"PingFang SC","Microsoft YaHei",sans-serif;}
+  body{background:var(--bg);color:var(--ink);display:flex;justify-content:center;min-height:100vh;}
+  #app{width:100%;max-width:460px;background:var(--bg);min-height:100vh;display:flex;flex-direction:column;box-shadow:0 0 30px rgba(0,0,0,.06);}
+  header{padding:14px 16px 10px;border-bottom:1px solid var(--line);background:var(--card);}
+  header h1{font-size:18px;letter-spacing:2px;}
+  header .slogan{font-size:11px;color:var(--sub);margin-top:2px;}
+  #metaBar{display:flex;gap:8px;margin-top:8px;font-size:11px;color:var(--sub);flex-wrap:wrap;}
+  #metaBar .chip{border:1px solid var(--line);border-radius:10px;padding:2px 8px;background:var(--bg);}
+  main{flex:1;padding:14px 16px 30px;display:flex;flex-direction:column;}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:12px;}
+  .btn{display:block;width:100%;padding:12px;border:none;border-radius:10px;background:var(--accent);color:#fff;font-size:15px;letter-spacing:2px;cursor:pointer;margin-top:10px;transition:transform .12s ease,opacity .12s ease,box-shadow .12s ease;}
+  .btn:active{opacity:.85;}
+  .btn:focus-visible,.tab:focus-visible,.modalX:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
+  .btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent);}
+  .btn.gray{background:#8a8172;}
+  .stat{display:flex;justify-content:space-between;font-size:12px;color:var(--sub);margin-top:6px;}
+  .stat b{color:var(--ink);}
+  #drawArea{text-align:center;}
+  .drawCard{border:1px solid var(--line);border-radius:12px;padding:16px;margin:10px 0;background:var(--bg);}
+  .drawCard .label{font-size:11px;color:var(--sub);letter-spacing:2px;}
+  .drawCard .value{font-size:22px;margin-top:6px;font-weight:600;}
+  .drawCard .desc{font-size:11px;color:var(--sub);margin-top:4px;}
+  .rar-凡{color:#8a8172}.rar-良{color:#4a7c59}.rar-稀{color:#3d6d9e}.rar-世{color:#9a5bb0}.rar-仙{color:#b0713a}
+  .apt-F{color:#8a8172}.apt-E{color:#8a8172}.apt-D{color:#4a7c59}.apt-C{color:#4a7c59}.apt-B{color:#3d6d9e}.apt-A{color:#9a5bb0}.apt-S{color:#b0713a}.apt-SS{color:#b03a3a}.apt-SSS{color:#b03a3a;text-shadow:0 0 8px rgba(176,58,58,.4)}
+  .apt-丁{color:#8a8172}.apt-丙{color:#4a7c59}.apt-乙{color:#3d6d9e}.apt-甲{color:#9a5bb0}.apt-十绝{color:#b03a3a;text-shadow:0 0 8px rgba(176,58,58,.4)}
+  #lifeHead .name{font-size:16px;font-weight:600;}
+  #lifeHead .sub{font-size:11px;color:var(--sub);margin-top:2px;}
+  #bars{margin-top:10px;}
+  .bar{height:8px;border-radius:4px;background:#eee7d6;overflow:hidden;margin-top:6px;position:relative;}
+  .bar i{display:block;height:100%;background:var(--accent);transition:width .2s;}
+  .bar.life i{background:var(--accent2);}
+  #log{height:300px;overflow-y:auto;font-size:12px;line-height:1.9;margin-top:12px;padding:10px;background:#fbf8f0;border:1px solid var(--line);border-radius:10px;}
+  .logview{height:340px;overflow-y:auto;font-size:12px;line-height:1.9;padding:10px;background:#fbf8f0;border:1px solid var(--line);border-radius:10px;}
+  #log p,.logview p{color:#6b6355;}
+  #log p.good,.logview p.good{color:var(--accent);}
+  #log p.bad,.logview p.bad{color:var(--danger);}
+  #log p.big,.logview p.big{color:var(--gold);font-weight:600;}
+  #speedCtl{display:flex;gap:8px;margin-top:10px;}
+  #speedCtl button{flex:1;padding:7px;border:1px solid var(--line);background:var(--card);border-radius:8px;font-size:12px;cursor:pointer;color:var(--sub);}
+  #speedCtl button.on{background:var(--accent);color:#fff;border-color:var(--accent);}
+  .seg{display:flex;gap:8px;margin-top:6px;}
+  .seg button{flex:1;padding:7px;border:1px solid var(--line);background:var(--card);border-radius:8px;font-size:12px;cursor:pointer;color:var(--sub);}
+  .seg button.on{background:var(--accent);color:#fff;border-color:var(--accent);}
+  /* 命运抉择 */
+  #choiceBox{border-color:var(--gold);}
+  #choiceTitle{color:var(--gold);font-weight:700;letter-spacing:2px;}
+  #choiceQ{font-size:13px;margin-top:6px;line-height:1.7;}
+  #choiceBox .btn{margin-top:10px;padding:10px;letter-spacing:1px;}
+  #choiceBox .btn small{display:block;font-size:11px;opacity:.85;letter-spacing:0;margin-top:2px;}
+  .tabs{display:flex;gap:8px;margin-bottom:10px;overflow-x:auto;scrollbar-width:none;}
+  .tabs::-webkit-scrollbar{display:none;}
+  .tab{flex:1 0 auto;padding:8px 10px;border:1px solid var(--line);background:var(--bg);border-radius:8px;font-size:13px;cursor:pointer;color:var(--sub);white-space:nowrap;}
+  .tab.on{background:var(--accent);color:#fff;border-color:var(--accent);}
+  .hallItem{border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-top:6px;font-size:12px;display:flex;justify-content:space-between;align-items:center;gap:8px;}
+  .hallItem .who{font-weight:600;color:var(--ink);}
+  .archiveBtn{margin-top:6px;padding:4px 8px;border:1px solid var(--gold);background:transparent;color:var(--gold);border-radius:7px;font-size:11px;cursor:pointer;}
+  #resultArea{text-align:center;}
+  #resultArea .ending{font-size:24px;font-weight:700;letter-spacing:4px;margin:8px 0;}
+  #resultArea .good .ending{color:var(--gold);}
+  .rewards{display:flex;justify-content:center;gap:16px;margin:12px 0;font-size:13px;}
+  .rewards b{color:var(--accent);}
+  .rtag{display:inline-block;font-size:11px;border-radius:8px;padding:1px 8px;vertical-align:middle;letter-spacing:1px;font-weight:600;}
+  .rt-普通{background:#eee7d6;color:#8a8172}
+  .rt-优良{background:#e2efe4;color:#4a7c59}
+  .rt-稀有{background:#e0e9f3;color:#3d6d9e}
+  .rt-史诗{background:#efe3f5;color:#9a5bb0}
+  .rt-传说{background:#f5e9cf;color:#9a7b2d}
+  #reportCard{text-align:left;background:var(--bg);border:1px dashed var(--gold);border-radius:10px;padding:10px 12px;margin:10px 0 0;}
+  #repBody{white-space:pre-line;margin-top:6px;}
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;z-index:9;padding:14px;cursor:pointer;}
+  .modal .inner{position:relative;background:var(--card);border-radius:14px;max-width:420px;width:100%;max-height:86vh;overflow-y:auto;overscroll-behavior:contain;padding:44px 18px 18px;cursor:default;box-shadow:0 12px 36px rgba(50,40,20,.18);}
+  .modalX{position:absolute;top:9px;right:10px;width:32px;height:32px;border:1px solid var(--line);border-radius:50%;background:var(--bg);color:var(--sub);font-size:22px;line-height:26px;cursor:pointer;}
+  .homeActions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:2px;}
+  .homeActions .btn{margin-top:10px;font-size:13px;letter-spacing:1px;padding:11px 7px;}
+  .homeNote{margin-top:10px;padding:9px 10px;border-radius:9px;background:#fbf4df;border:1px dashed var(--gold);font-size:11px;line-height:1.7;color:#6b5a36;}
+  .modal h3{font-size:15px;margin-bottom:10px;}
+  .codexItem{border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-top:6px;font-size:12px;}
+  .codexItem.locked{color:#c9c2b2;}
+  .codexItem .tag{float:right;font-size:11px;}
+  .storyIntro{padding:10px;border-radius:10px;background:linear-gradient(135deg,#f8f1dd,#f0e5c7);border:1px solid var(--line);font-size:12px;line-height:1.8;color:#655945;}
+  .storyCard{border:1px solid var(--line);border-radius:10px;padding:10px;margin-top:8px;background:var(--card);}
+  .storyCard.locked{background:var(--bg);color:#aaa18f;}
+  .storyCard .storyTitle{font-weight:700;color:var(--ink);}
+  .storyCard.locked .storyTitle{color:#aaa18f;}
+  .storyMeta{font-size:11px;color:var(--sub);line-height:1.75;margin-top:4px;}
+  .storyEcho{margin-top:6px;padding-top:6px;border-top:1px dashed var(--line);font-size:12px;line-height:1.8;color:#6b6355;}
+  .codexSectionTitle{font-size:12px;font-weight:700;color:var(--gold);margin-top:12px;padding-bottom:4px;border-bottom:1px solid var(--line);}
+  .codexGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:6px;}
+  .codexGrid .codexItem{margin-top:0;}
+  .talentTree{border:1px solid var(--line);border-radius:10px;padding:10px;margin-top:8px;background:var(--bg);}
+  .talentTreeHead{display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700;color:var(--ink);}
+  .talentTreeHead small{font-size:11px;color:var(--sub);font-weight:400;}
+  .talentCard{border:1px solid var(--line);border-radius:8px;padding:8px;margin-top:7px;background:var(--card);}
+  .talentCard.locked{opacity:.72;background:#f3eee2;}
+  .talentCard.on{border-color:var(--gold);box-shadow:0 0 0 1px rgba(154,123,45,.12);}
+  .talentName{font-size:12px;font-weight:700;}
+  .talentDesc{font-size:11px;color:var(--sub);line-height:1.65;margin-top:3px;}
+  .talentCost{display:flex;justify-content:space-between;align-items:center;margin-top:5px;font-size:11px;color:var(--gold);}
+  .talentCost button{padding:4px 8px;border:1px solid var(--accent);border-radius:6px;background:transparent;color:var(--accent);font-size:11px;cursor:pointer;}
+  .talentCost button:disabled{border-color:var(--line);color:#b8ae9e;cursor:default;}
+  .talentHint{padding:8px;border-radius:8px;background:#fbf4df;border:1px dashed var(--gold);font-size:11px;line-height:1.7;color:#6b5a36;margin-top:8px;}
+  .codexDeathText{font-size:11px;line-height:1.75;color:#6b6355;margin-top:5px;padding-top:5px;border-top:1px dashed var(--line);}
+  .discoveries{margin-top:10px;padding:10px;border:1px solid var(--gold);border-radius:10px;background:#fbf4df;text-align:left;}
+  .discoveries .small{color:var(--gold);font-weight:700;}
+  .discoveries div{font-size:12px;line-height:1.7;color:#6b5a36;}
+  .small{font-size:11px;color:var(--sub);line-height:1.8;}
+  .destiny{margin-top:10px;padding:10px;border-radius:10px;background:linear-gradient(135deg,#fdf6e3,#f5e5ae);border:1px solid var(--gold);color:var(--gold);font-weight:700;letter-spacing:2px;text-align:center;font-size:14px;animation:glow 1s ease-in-out infinite alternate;}
+  @keyframes glow{from{box-shadow:0 0 4px rgba(154,123,45,.25)}to{box-shadow:0 0 20px rgba(154,123,45,.85)}}
+  #quoteBox{margin-top:10px;text-align:left;}
+  #quoteInput{width:100%;box-sizing:border-box;min-height:72px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px;font-size:13px;font-family:inherit;color:var(--ink);resize:vertical;}
+  .vbtn{cursor:pointer;margin-left:6px;user-select:none;font-size:12px;}
+  .vbtn.off{opacity:.45;cursor:default;}  .hide{display:none;}
+  @media(max-width:360px){
+    main{padding-left:12px;padding-right:12px;}
+    .panel{padding:13px;}
+    .homeActions .btn{font-size:12px;letter-spacing:0;}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1>蛊真人 · 转生模拟器</h1>
+    <div class="slogan">—— 人是万物之灵，蛊是天地真精 ——</div>
+    <div id="metaBar"></div>
+  </header>
+  <main>
+
+    <!-- 首页 -->
+    <section id="home">
+      <div class="panel">
+        <div class="small" id="globalLine">🌐 正在连接天道网络……</div>
+        <div class="small" style="margin-top:8px">每一世，你将随机觉醒<b>空窍资质</b>与<b>本命蛊</b>：丁乙丙甲四等资质决定你能修到几转；从一转蛊师到九转蛊仙——寿元不随境界增长，想活得更久，去寻<b>寿蛊</b>。</div>
+        <div class="small" style="margin-top:8px">本局玩法：<b>命运抉择</b>——人生途中你将亲手决定几次走向；30 种本命蛊各有<b>流派特性</b>（保命/机缘/攻伐/邪蛊/轮回）。</div>
+        <div class="small" style="margin-top:8px">本局最多牵引<b>两段往事</b>：每段故事会经历五个章节、四个分支，并在最后留下两种不同结局。故事选择与命运选择共用同一套手动/自动/关闭设置。</div>
+        <div class="small" style="margin-top:8px">每一世终结后，<b>春秋蝉的残鸣</b>不会消散：记忆越深，下一世觉醒高资质的概率越高；积攒<b>轮回残念</b>，可换一次必得高资质的转世，也可点亮永久天赋。</div>
+        <div class="small" style="margin-top:4px">📖 非商业同人试玩，仅供学习交流；与原作者、出版社及版权方无关。原作相关名称与设定权利归其权利人所有。</div>
+        <div class="small" style="margin-top:10px">🔮 抉择开关（命运抉择通常 2~3 次，故事分支另计）：手动=暂停等你选；自动=由天机代选不暂停；关闭=纯自动流转</div>
+        <div class="seg" id="choiceModeCtl">
+          <button data-cm="manual">🖐 手动抉择</button>
+          <button data-cm="auto">⚙ 自动决策</button>
+          <button data-cm="off">✖ 无抉择</button>
+        </div>
+        <button class="btn" id="btnStart">开始这一世</button>
+        <div class="homeActions">
+          <button class="btn ghost" id="btnMeta">🧭 轮回道树</button>
+          <button class="btn ghost" id="btnHall">👑 永生殿堂</button>
+          <button class="btn ghost" id="btnCodex">📖 图鉴</button>
+        </div>
+        <div class="homeNote">先玩一世，再回来点亮轮回道树。天赋会作用于之后所有对局，但只提供方向、信息与下限，不会抹掉每一世的随机性。</div>
+        <div style="display:flex;gap:8px">
+          <button class="btn ghost" id="btnExport">导出存档</button>
+          <button class="btn ghost" id="btnImport">导入存档</button>
+        </div>
+        <input class="hide" type="file" id="saveFile" accept="application/json,.json">
+        <button class="btn ghost" id="btnReset">重置存档</button>
+      </div>
+    </section>
+
+    <!-- 抽卡 -->
+    <section id="draw" class="hide">
+      <div class="panel" id="drawArea">
+        <div class="small" id="drawHint">神识沉入识海，命蛊与资质即将揭晓……</div>
+        <div class="drawCard"><div class="label">空窍资质</div><div class="value" id="drawApt">?</div><div class="desc" id="drawAptDesc">决定这一世的成长上限</div></div>
+        <div class="drawCard"><div class="label">本命蛊</div><div class="value" id="drawGu">?</div><div class="desc" id="drawGuDesc">决定这一世的道途流派</div></div>
+        <div class="drawCard"><div class="label">道心人格</div><div class="value" id="drawPersona">?</div><div class="desc" id="drawPersonaDesc">影响这一世的际遇与抉择倾向</div></div>
+        <div class="small hide" id="drawGoal"></div>
+        <button class="btn hide" id="btnAwaken">觉醒，开始这一世</button>
+      </div>
+    </section>
+
+    <!-- 人生模拟 -->
+    <section id="life" class="hide">
+      <div class="panel" id="lifeHead">
+        <div class="destiny hide" id="destiny"></div>
+        <div class="name" id="lifeName"></div>
+        <div class="sub" id="lifeSub"></div>
+        <div id="bars">
+          <div class="stat"><span>境界</span><b id="stRank">一转蛊师</b></div>
+          <div class="stat"><span>战力</span><b id="stPow">10</b></div>
+          <div class="stat"><span>寿元</span><b id="stLife">--</b></div>
+          <div class="bar life"><i id="barLife" style="width:100%"></i></div>
+          <div class="stat"><span>突破进度</span><b id="stProg">--</b></div>
+          <div class="bar"><i id="barProg" style="width:0%"></i></div>
+        </div>
+      </div>
+      <div class="panel hide" id="choiceBox">
+        <div class="small" id="choiceTitle"></div>
+        <div id="choiceQ"></div>
+        <button class="btn" id="choiceA"></button>
+        <button class="btn ghost" id="choiceB"></button>
+        <div class="small" id="choiceHint" style="text-align:center;margin-top:6px">你的选择将改变这一世的走向</div>
+      </div>
+      <div id="log"></div>
+      <div id="speedCtl">
+        <button data-sp="1" class="on">×1</button>
+        <button data-sp="2">×2</button>
+        <button data-sp="4">×4</button>
+        <button id="btnSkip">跳过本局</button>
+      </div>
+    </section>
+
+    <!-- 结算 -->
+    <section id="result" class="hide">
+      <div class="panel" id="resultArea">
+        <div class="small">这一世，到此为止</div>
+        <div class="ending" id="resEnding"></div>
+        <div><span class="rtag hide" id="resRarity"></span></div>
+        <div class="small" id="resDetail"></div>
+        <div class="rewards">
+          <span>蝉鸣记忆 <b id="resExp">+0</b></span>
+          <span>轮回残念 <b id="resPity">+0</b></span>
+        </div>
+        <div id="reportCard">
+          <div style="font-size:12px;font-weight:700;color:var(--gold);letter-spacing:1px">⚔ 一世战报</div>
+          <div class="small" id="repBody"></div>
+        </div>
+        <div class="discoveries hide" id="storyDiscoveries">
+          <div class="small">📜 往事录新页</div>
+          <div id="storyNewList"></div>
+        </div>
+        <div class="hide" id="quoteBox">
+          <div class="small">🕊 留一道音给后世（≤200 字，可沉默飞升）</div>
+          <textarea id="quoteInput" maxlength="200" placeholder="写一句话，刻在殿堂上给后来转世的人……"></textarea>
+          <div class="small" style="text-align:right"><span id="quoteCnt">0/200</span></div>
+          <div style="display:flex;gap:8px">
+            <button class="btn" id="btnQuoteSend">刻入殿堂</button>
+            <button class="btn ghost" id="btnQuoteSkip">沉默飞升</button>
+          </div>
+        </div>
+        <button class="btn ghost" id="btnCopyReport">📋 复制战报文本</button>
+        <button class="btn ghost" id="btnReview">📜 回顾这一世</button>
+        <button class="btn" id="btnAgain">再入轮回</button>
+        <button class="btn ghost" id="btnBackHome">返回</button>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- 回顾弹窗 -->
+<div class="modal hide" id="reviewModal">
+  <div class="inner">
+    <button class="modalX" type="button" data-close-modal="reviewModal" aria-label="关闭回顾">×</button>
+    <h3 id="reviewTitle">📜 回顾这一世</h3>
+    <div class="small" id="reviewMeta"></div>
+    <div class="logview" id="reviewLog"></div>
+    <button class="btn ghost" id="btnHi">✨ 只看高光</button>
+    <button class="btn" id="btnCloseReview">关闭</button>
+  </div>
+</div>
+
+<!-- 永生殿堂弹窗 -->
+<div class="modal hide" id="hallModal">
+  <div class="inner">
+    <button class="modalX" type="button" data-close-modal="hallModal" aria-label="关闭永生殿堂">×</button>
+    <h3>👑 永生殿堂 <span id="daoTag" style="font-size:11px;color:var(--sub);cursor:pointer" title="点击改名"></span></h3>
+    <div class="tabs">
+      <button class="tab on" data-tab="local">👑 本地殿堂</button>
+      <button class="tab" data-tab="net">🌐 全网神榜</button>
+    </div>
+    <div id="hallLocal">
+      <div class="small" id="hallSummary"></div>
+      <div id="hallList"></div>
+    </div>
+    <div id="hallNet" class="hide"></div>
+    <button class="btn" id="btnCloseHall">关闭</button>
+  </div>
+</div>
+
+<!-- 图鉴弹窗 -->
+<div class="modal hide" id="codexModal">
+  <div class="inner">
+    <button class="modalX" type="button" data-close-modal="codexModal" aria-label="关闭图鉴">×</button>
+    <h3>📖 图鉴</h3>
+    <div class="tabs" id="codexTabs">
+      <button class="tab on" data-codex-tab="gu">🐛 命蛊</button>
+      <button class="tab" data-codex-tab="end">⚰ 结局</button>
+      <button class="tab" data-codex-tab="story">📜 往事录</button>
+    </div>
+    <div id="codexPaneGu">
+      <div class="small">命蛊（<span id="codexGuCount"></span>）· 括号内为流派：🛡保命 🍀机缘 ⚔攻伐 😈邪蛊 🔁轮回</div>
+      <div class="small" id="codexGuSummary"></div>
+      <div id="codexGu"></div>
+    </div>
+    <div id="codexPaneEnd" class="hide">
+      <div class="small">结局（<span id="codexEndCount"></span>）</div>
+      <div id="codexEnd"></div>
+    </div>
+    <div id="codexPaneStory" class="hide">
+      <div class="small" id="codexStoryCount"></div>
+      <div class="talentHint" id="codexStoryProgress"></div>
+      <div class="storyIntro" id="storyWorldIntro"></div>
+      <div id="codexStory"></div>
+      <div class="small" style="margin-top:12px">散落人间的片语</div>
+      <div id="codexMoments"></div>
+    </div>
+    <div id="codexPaneMeta" class="hide">
+      <div class="small" id="codexMetaSummary"></div>
+      <div class="talentHint">轮回道树是永久局外成长：命、缘、道、藏、运五条路共二十个节点。点亮后会作用于之后所有对局，只改变方向、信息和下限，不会把每一世变成固定剧本。轮回残念也可以继续用于 100 点高资质保底。</div>
+      <div class="codexSectionTitle">轮回道树 · 永久天赋</div>
+      <div id="codexTalent"></div>
+      <button class="btn ghost" id="btnResetTalents">洗去已点天赋（返还 80% 残念）</button>
+      <div class="codexSectionTitle">诸相记录</div>
+      <div id="codexPeople"></div>
+      <div class="codexSectionTitle">牵挂名录 · 跨世重逢</div>
+      <div id="codexBonds"></div>
+      <div class="codexSectionTitle">道号与成就</div>
+      <div id="codexAchievements"></div>
+      <div class="codexSectionTitle">临终簿 · 读过的最后一句话</div>
+      <div id="codexDeath"></div>
+    </div>
+    <button class="btn" id="btnCloseCodex">关闭</button>
+  </div>
+</div>
+
+<!-- 轮回道树弹窗：局外养成与跨世记录独立入口 -->
+<div class="modal hide" id="metaModal">
+  <div class="inner">
+    <button class="modalX" type="button" data-close-modal="metaModal" aria-label="关闭轮回道树">×</button>
+    <h3>🧭 轮回道树 <span style="font-size:11px;color:var(--sub)">局外养成</span></h3>
+    <div class="small" id="metaSummary"></div>
+    <div class="talentHint">这里保存的是跨越轮回的积累。命、缘、道、藏、运五条路共二十个节点，点亮后永久生效；轮回残念也可继续用于高资质保底。你可以随时洗点，但会损失一部分残念。</div>
+    <div class="codexSectionTitle">轮回道树 · 永久天赋</div>
+    <div id="metaTalent"></div>
+    <button class="btn ghost" id="btnResetTalentsStandalone">洗去已点天赋（返还 80% 残念）</button>
+    <div class="codexSectionTitle">诸相记录</div>
+    <div id="metaPeople"></div>
+    <div class="codexSectionTitle">牵挂名录 · 跨世重逢</div>
+    <div id="metaBonds"></div>
+    <div class="codexSectionTitle">道号与成就</div>
+    <div id="metaAchievements"></div>
+    <div class="codexSectionTitle">临终簿 · 读过的最后一句话</div>
+    <div id="metaDeath"></div>
+    <button class="btn" id="btnCloseMeta">关闭</button>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ============ 数据 ============ */
+/* 空窍资质（原著设定）：元海占空窍成数决定转数上限；十成真元=十绝体 */
+const APTS = [
+  {k:"丁", f:0.60, w:30, cap:2},
+  {k:"丙", f:0.85, w:30, cap:3},
+  {k:"乙", f:1.15, w:24, cap:4},
+  {k:"甲", f:1.50, w:13, cap:5},
+  {k:"十绝", f:2.20, w:3, cap:9}
+];
+const APT_DESC = {丁:"元海两三成，最高修到一至二转",丙:"元海四五成，通常停在二转上下",乙:"元海六七成，有望三至四转",甲:"元海八九成，天赋异禀，可冲五转",十绝:"十成真元圆满无瑕——却也天地不容"};
+/* 本命蛊流派：c = 保命 / 机缘 / 攻伐 / 邪蛊 / 轮回 */
+const GCLS = {
+  保命:{icon:"🛡", d:"濒死时本命蛊燃身护主一次（寿元 +8）；冲击境界失败折寿减半"},
+  机缘:{icon:"🍀", d:"古窟、秘境、合蛊等机缘事件概率大增"},
+  攻伐:{icon:"⚔", d:"切磋、猎杀、竞逐等斗战胜率更高，突破成功率 +6%"},
+  邪蛊:{icon:"😈", d:"修炼效率 +15%，但凶险与反噬事件更多"},
+  轮回:{icon:"🔁", d:"记忆经验与轮回残念收获 +20%，天授永生概率 +50%"}
+};
+const GUS = [
+  {n:"青茅蛊", r:"凡", c:"保命", g:3.0, life:0,  d:"山寨里最寻常的蛊，胜在安稳"},
+  {n:"藤蔓蛊", r:"凡", c:"保命", g:3.2, life:1,  d:"缠绵生根，命力顽强"},
+  {n:"蜜露蛊", r:"凡", c:"保命", g:3.0, life:2,  d:"甘露养身，益寿延年"},
+  {n:"石甲蛊", r:"凡", c:"保命", g:3.4, life:2,  d:"皮糙肉厚，历练中不易受伤"},
+  {n:"月光蛊", r:"凡", c:"机缘", g:3.2, life:0,  d:"月华凝成的清辉，可照明夜路"},
+  {n:"酒虫", r:"凡", c:"机缘", g:3.6, life:0,  d:"酿出灵酒，可在坊市换元石"},
+  {n:"沙行蛊", r:"凡", c:"机缘", g:3.4, life:0,  d:"入沙不没，常拾遗珍"},
+  {n:"赤炎蛊", r:"良", c:"攻伐", g:5.8, life:0,  d:"性烈如火，突破时气势更盛"},
+  {n:"石纹蛊", r:"良", c:"攻伐", g:5.4, life:0,  d:"纹路如刃，锋芒内敛"},
+  {n:"铁线蛊", r:"良", c:"保命", g:5.2, life:4,  d:"坚韧绵长，寿元稍长"},
+  {n:"月露蛊", r:"良", c:"保命", g:6.0, life:2,  d:"月华凝露，温养经脉"},
+  {n:"雾隐蛊", r:"良", c:"机缘", g:5.6, life:0,  d:"化雾遁形，出入险地"},
+  {n:"心莲蛊", r:"良", c:"轮回", g:5.0, life:3,  d:"心莲不染，记忆明澈"},
+  {n:"裂风蛊", r:"良", c:"攻伐", g:6.4, life:0,  d:"风裂石开，攻伐之蛊"},
+  {n:"雷竹蛊", r:"稀", c:"攻伐", g:8.8, life:0,  d:"雷中生竹，一鸣惊人"},
+  {n:"星芒蛊", r:"稀", c:"攻伐", g:9.4, life:2,  d:"星辉坠体，一击破空"},
+  {n:"玄冰蛊", r:"稀", c:"保命", g:9.2, life:6,  d:"寒气养神，驻颜延寿"},
+  {n:"玉髓蛊", r:"稀", c:"保命", g:8.8, life:8,  d:"玉髓温养，伤势自愈"},
+  {n:"血蚕蛊", r:"稀", c:"邪蛊", g:10.0,life:-4, d:"邪道之蛊，噬血而长（折寿）"},
+  {n:"骨蝎蛊", r:"稀", c:"邪蛊", g:10.5,life:-3, d:"毒骨为针，邪路凶名"},
+  {n:"幽泉蛊", r:"稀", c:"机缘", g:9.0, life:4,  d:"幽泉暗涌，底蕴深藏"},
+  {n:"一气金光虫", r:"世", c:"攻伐", g:13.5,life:4,  d:"一气化金光，纵横无阻"},
+  {n:"烛龙蛊", r:"世", c:"保命", g:15.0,life:8,  d:"龙烛照夜，寿元大增"},
+  {n:"噬魂蛊", r:"世", c:"邪蛊", g:16.5,life:-8, d:"邪道至蛊，凶险与造化并存"},
+  {n:"涅槃蛊", r:"世", c:"保命", g:12.5,life:14, d:"浴火重生，最擅保命延寿"},
+  {n:"天蚕蛊", r:"世", c:"轮回", g:14.0,life:8,  d:"天蚕九变，丝丝连轮回"},
+  {n:"希望蛊", r:"仙", c:"轮回", g:21.0,life:10, d:"传说中能带来希望的古蛊"},
+  {n:"轮回蛊", r:"仙", c:"轮回", g:19.0,life:18, d:"传说中与轮回有关，记忆格外清晰"},
+  {n:"混沌蛊", r:"仙", c:"轮回", g:22.0,life:15, d:"混沌一炁，轮回之祖"},
+  {n:"造化蛊", r:"仙", c:"机缘", g:24.0,life:12, d:"夺天地造化，仙蛊之首"}
+];
+const RANKS = ["一转蛊师","二转蛊师","三转蛊师","四转蛊师","五转蛊师","六转蛊仙","七转蛊仙","八转蛊仙","九转蛊仙"];
+const STAGES = ["初阶","中阶","高阶","巅峰"];
+/* 道心人格：16 型，四字母轴影响际遇与抉择倾向 */
+const PERSONA_NAMES = {INTJ:"谋定者",INTP:"观星客",ENTJ:"御众者",ENTP:"逐变者",INFJ:"守灯人",INFP:"拾梦者",ENFJ:"燃灯者",ENFP:"游歌者",ISTJ:"守拙翁",ISFJ:"织露人",ESTJ:"执秤者",ESFJ:"暖玉人",ISTP:"断刃客",ISFP:"落墨者",ESTP:"搏浪儿",ESFP:"闹市仙"};
+const AXIS_DESC = {E:"喜热闹，广结缘",I:"喜清静，善独处",N:"重机缘，多奇想",S:"重实务，稳扎稳打",T:"重理智，谋定后动",F:"重情义，以心待人",J:"有恒心，步步为营",P:"随缘而动，任性洒脱"};
+const OPP = {E:"I",I:"E",N:"S",S:"N",T:"F",F:"T",J:"P",P:"J"};
+const PERSONA_KEYS = Object.keys(PERSONA_NAMES);
+function makePersona(k){
+  return {k, n:PERSONA_NAMES[k], E:k[0]==="E"?1:-1, N:k[1]==="N"?1:-1, T:k[2]==="T"?1:-1, J:k[3]==="J"?1:-1};
+}
+function personaDesc(p){
+  return ["E","N","T","J"].map(a=>{
+    const on = (a==="E"?p.E:a==="N"?p.N:a==="T"?p.T:p.J)>0;
+    const key = on?a:OPP[a];
+    return key+"·"+AXIS_DESC[key];
+  }).join(" / ");
+}
+/* 事件：lucky=机缘类（机缘蛊加权）；dark=凶险类（邪蛊/邪修加权，正道减权） */
+const EVENTS = [
+  {w:16, t:"同辈切磋", f:(S,L)=>{ if(Math.random()<0.55+combatBonus()){L.add(`第${S.age}岁，与同辈切磋，胜！有所领悟`,1);L.gain(3);} else {L.add(`第${S.age}岁，切磋落败，受创，寿元 -1`,2);S.lifespan-=1;} }},
+  {w:10, t:"蛹潮来袭", dark:1, f:(S,L)=>{ if(Math.random()<(talentOwned("ming_4")?0.18:0.25)){L.add(`第${S.age}岁，蛹潮席卷而来，重伤，寿元 -5`,2);S.lifespan-=5;S.prog*=0.9;} else {L.add(`第${S.age}岁，蛹潮掠境而过，因祸得福，战力大增`,1);L.gain(12);L.key("蛹潮中因祸得福",1);} }},
+  {w:12, t:"灵田历练", f:(S,L)=>{L.add(`第${S.age}岁，蛊田劳作一年，真元渐醇`);L.gain(1.2);}},
+  {w:8,  t:"古窟机缘", lucky:1, f:(S,L)=>{L.add(`第${S.age}岁，误入古窟，得前人遗留传承！战力大增`,1);L.gain(12);L.key("古窟得传承",1);}},
+  {w:10, t:"家族任务", f:(S,L)=>{L.add(`第${S.age}岁，完成家族任务，赏赐颇丰`);L.gain(3);}},
+  {w:7,  t:"灵泉悟道", f:(S,L)=>{L.add(`第${S.age}岁，于灵泉畔静坐悟道，似有顿悟`,1);L.gain(8);}},
+  {w:6,  t:"邪修袭杀", dark:1, f:(S,L)=>{ if(Math.random()<0.4+combatBonus()){L.add(`第${S.age}岁，反杀邪修，缴获其积蓄，战力大增`,1);L.gain(10);L.key("反杀邪修",1);} else if(S.fortuneShield){S.fortuneShield=false;L.add(`第${S.age}岁，邪修伏杀本该命中——你提前半步侧身，像有人替你看见了刀光`,1);L.gain(2);L.key("避过一次命数凶线",2);} else {L.add(`第${S.age}岁，遭邪修伏杀，拼死逃脱，寿元 -3`,2);S.lifespan-=3;} }},
+  {w:6,  t:"合蛊机缘", lucky:1, f:(S,L)=>{L.add(`第${S.age}岁，偶得副蛊，与本命蛊相合，修炼效率永久提升一成`,1);S.bonus*=1.1;L.gain(2);L.key("偶得副蛊相合",1);}},
+  {w:6,  t:"心魔侵蚀", dark:1, f:(S,L)=>{ if(S.gu.n==="血蚕蛊"||S.gu.n==="噬魂蛊"){L.add(`第${S.age}岁，邪蛊反噬，心魔滋生，寿元 -2，战力暴涨`,2);S.lifespan-=2;L.gain(14);L.key("邪蛊反噬，战力暴涨",1);} else {L.add(`第${S.age}岁，心魔偶起，静心调息，平安度过`);L.gain(0.5);} }},
+  {w:6,  t:"传承秘境", lucky:1, f:(S,L)=>{L.add(`第${S.age}岁，秘境开启，你抓住了机缘`,1);L.gain(13);L.key("秘境得传承",1);}},
+  {w:6,  t:"坊市淘宝", lucky:1, f:(S,L)=>{ if(Math.random()<0.3){L.add(`第${S.age}岁，坊市淘得残卷，如获至宝`,1);L.gain(5);} else {L.add(`第${S.age}岁，坊市闲逛，一无所获`);L.gain(0.3);} }},
+  {w:6,  t:"秘境竞逐", lucky:1, f:(S,L)=>{ if(Math.random()<0.5+combatBonus()){L.add(`第${S.age}岁，秘境竞逐力压群雄，独得机缘！`,1);L.gain(11);L.key("秘境竞逐夺魁",1);} else {L.add(`第${S.age}岁，秘境竞逐不敌对手，铩羽而归`);L.gain(1);} }},
+  {w:2.4,t:"故人重逢",warm:1,f:(S,L)=>{ if(!meta.bonds||!meta.bonds.length){L.add(`第${S.age}岁，街角有人与你擦肩而过。你回头时，只看见一枚旧扣子在风里滚远`);L.gain(0.5);return;} const b=meta.bonds[Math.floor(Math.random()*meta.bonds.length)]; b.visits=(b.visits||0)+1; b.level=Math.min(3,(b.level||0)+1); const scenes=b.type==="道侣"?["你在药炉边认出那双手，却没有叫出名字。对方也没有问，只把火拨旺了一点。","你们在渡口并肩坐到天黑，谁都没有提上一世。可沉默本身已经把名字还了回来。","他临别时终于叫出你的旧名，又笑着改口：这一世，也请多活几年。"]:b.type==="宿敌"?["那人站在雨里，先认出你的剑，再认出你的脾气。你们没有拔剑，只交换了一眼不服输。","他把一枚旧伤药丢给你：别误会，下一次交手，我要你全盛。","你们在暮年各自放下兵刃。不是和解，只是终于承认彼此把这条路走完了。"]:["你在边荒认出那张陌生的脸，像认出一盏多年未熄的灯。","他不记得你，却把最后一碗热粥推到你面前。旧情没有名字，动作有。","他临行前回头说：不知为何，总觉得见过你很多次。"]; const scene=scenes[Math.min(2,b.level-1)]; b.last=scene; L.add(`第${S.age}岁，故人重逢·${b.name}：${scene}`,1); L.key(`故人重逢「${b.name}」`,2); if(b.level>=3){S.daoHeart=(S.daoHeart||0)+1;L.gain(8);storyNew(`牵挂名录：${b.name} · 三度重逢`);} else L.gain(2); save(); }},
+  {w:5,  t:"道侣情缘", f:(S,L)=>{ if(S.spouse){L.add(`第${S.age}岁，与道侣双修共进，岁月静好`,1);L.gain(2);S.lifespan+=1;} else {S.spouse=true;S.lifespan+=3;L.add(`第${S.age}岁，结为道侣，患难与共，寿元 +3`,1);L.key("结为道侣",2);} }},
+  {w:6,  t:"族中大比", f:(S,L)=>{ if(Math.random()<0.5+combatBonus()){L.add(`第${S.age}岁，族中大比夺魁，获宗门重赏`,1);L.gain(6);} else {L.add(`第${S.age}岁，族中大比失利，被罚劳作一年`);L.gain(0.8);} }},
+  {w:5,  t:"悬赏妖蛊", f:(S,L)=>{ if(Math.random()<0.45+combatBonus()){L.add(`第${S.age}岁，猎杀妖蛊完成悬赏，赏金丰厚`,1);L.gain(7);} else {L.add(`第${S.age}岁，悬赏妖蛊反噬其主，负伤逃回，寿元 -2`,2);S.lifespan-=2;} }},
+  {w:4,  t:"蛊田瘟病", dark:1, f:(S,L)=>{ if(S.gu.c==="保命"){L.add(`第${S.age}岁，蛊田瘟病蔓延，本命蛊护住灵植根脉，损失极小`);L.gain(0.5);} else {L.add(`第${S.age}岁，蛊田瘟病蔓延，一年收成尽毁，进度受挫`,2);S.prog*=0.92;} }},
+  {w:4,  t:"前辈指点", lucky:1, f:(S,L)=>{S.bonus*=1.06;L.add(`第${S.age}岁，得无名前辈指点迷津，修炼效率永久提升半成`,1);L.gain(2);L.key("得前辈指点",1);}},
+  {w:4,  t:"天材地宝", lucky:1, f:(S,L)=>{L.add(`第${S.age}岁，天降异象，吞噬天材地宝，战力暴涨！`,1);L.gain(14);L.key("吞噬天材地宝",1);}},
+  {w:5,  t:"家族恩怨", dark:1, f:(S,L)=>{ if(Math.random()<0.5){L.add(`第${S.age}岁，卷入家族恩怨，被罚禁足思过，寿元 -1`,2);S.lifespan-=1;} else {L.add(`第${S.age}岁，家族恩怨中纵横捭阖，声望大涨`,1);L.gain(6);} }},
+  {w:6,  t:"闭关瓶颈", f:(S,L)=>{ if(S.gu.c==="轮回"||Math.random()<0.3){L.add(`第${S.age}岁，枯坐一年如一日，瓶颈松动，似有顿悟`,1);L.gain(6);} else {L.add(`第${S.age}岁，闭关苦修，瓶颈如山，进度回退`,2);S.prog*=0.85;} }},
+  {w:4,  t:"万蛊朝宗", lucky:1, f:(S,L)=>{S.bonus*=1.05;L.add(`第${S.age}岁，万蛊朝宗，群蛊环绕听道，本命蛊威能永久提升半成`,1);L.gain(6);L.key("万蛊朝宗",1);}},
+  {w:5,  t:"古修洞府", lucky:1, f:(S,L)=>{ if(Math.random()<0.55+combatBonus()){L.add(`第${S.age}岁，寻得上古修士洞府，尽得其藏！`,1);L.gain(13);L.key("得古修洞府藏",1);} else {L.add(`第${S.age}岁，洞府早已被人搜刮一空，只捡得残篇`);L.gain(1);} }},
+  {w:5,  t:"红尘历练", f:(S,L)=>{ if(S.daoHeart){L.add(`第${S.age}岁，入红尘炼心，道心愈明，修行事半而功倍`,1);L.gain(5);} else {S.daoHeart=1;L.add(`第${S.age}岁，入世历练一载，历悲欢离合，道心初成`,1);L.gain(2);} }},
+  {w:4,  t:"天劫余波", dark:1, f:(S,L)=>{ if(S.gu.c==="保命"||S.gu.c==="轮回"){L.add(`第${S.age}岁，前人天劫余威扫过，本命蛊静守其身，安然无恙`);L.gain(1);} else {L.add(`第${S.age}岁，被前人天劫余威波及，重养一年，进度受挫`,2);S.prog*=0.9;S.lifespan-=1;} }},
+  {w:5,  t:"邻里争端", dark:1, f:(S,L)=>{ if(Math.random()<0.5){L.add(`第${S.age}岁，与邻家道友起了争端，纠缠耗去一年光阴`,2);S.prog*=0.95;} else {L.add(`第${S.age}岁，化解邻里争端，落得好人缘`,1);L.gain(2);} }},
+  {w:4,  t:"古井窥天", lucky:1, f:(S,L)=>{ if(S.persona&&S.persona.N>0||Math.random()<0.4){L.add(`第${S.age}岁，古井窥天，得未来一瞥，修行避坑少走弯路`,1);L.gain(9);L.key("古井窥得未来一瞥",1);} else {L.add(`第${S.age}岁，古井窥天，只看得雾气茫茫，一无所获`);L.gain(0.5);} }},
+  {w:5,  t:"元气潮涌", f:(S,L)=>{L.add(`第${S.age}岁，天地元气潮涌，趁着灵气充裕苦修一载`,1);L.gain(5);}},
+  {w:4,  t:"旧敌寻仇", dark:1, f:(S,L)=>{ if(Math.random()<0.45+combatBonus()){L.add(`第${S.age}岁，旧敌寻仇，被你反手镇压，威名远播`,1);L.gain(9);L.key("镇压旧敌",1);} else {L.add(`第${S.age}岁，旧敌寻仇，两败俱伤，寿元 -3`,2);S.lifespan-=3;} }},
+  {w:4,  t:"奇货可居", f:(S,L)=>{ if(S.persona&&S.persona.N<0||Math.random()<0.5){L.add(`第${S.age}岁，低买高卖倒腾灵材，狠狠赚了一笔，换了修行资粮`,1);L.gain(7);} else {L.add(`第${S.age}岁，囤积灵材砸在手里，白白忙活一年`,2);L.gain(0.5);} }},
+  {w:1,  t:"古蝉遗蜕", lucky:1, f:(S,L)=>{L.add(`第${S.age}岁，荒山见一枚古蝉遗蜕，触之即碎，碎裂声中竟有旧世回响——"人这一生，当如蝉鸣一夏"`,3);L.gain(20);L.key("古蝉遗蜕中听见旧世回响",2);}},
+  {w:1,  t:"黑衫老者", dark:1, f:(S,L)=>{ if(Math.random()<0.5){S.bonus*=1.1;L.add(`第${S.age}岁，黑衫老者传你一篇无名古诀："老夫这一生，从不走寻常路。"修炼效率永久提升一成`,1);L.gain(4);L.key("得黑衫老者无名古诀",1);} else {L.add(`第${S.age}岁，黑衫老者所说"真正的大道"原来是骗局，反耗一年心血`,2);S.prog*=0.9;} }},
+  {w:2,  t:"十年寿蛊", lucky:1, f:(S,L)=>{S.lifespan+=10;L.add(`第${S.age}岁，降服一只十年寿蛊，直接增寿十年！`,1);L.key("获十年寿蛊",1);}},
+  {w:0.35, t:"百年寿蛊", lucky:1, f:(S,L)=>{S.lifespan+=100;L.add(`第${S.age}岁，机缘洞悉百年寿蛊的下落，成功到手！直接增寿百年`,3);L.key("获百年寿蛊，增寿百年",2);}},
+  {w:0.02, t:"千年寿蛊", lucky:1, f:(S,L)=>{S.lifespan+=1000;L.add(`第${S.age}岁，天地异象，千年寿蛊自投罗网——古往今来的至宝！直接增寿千年`,3);L.key("获千年寿蛊，增寿千年",5);}},
+  {w:3,  t:"万虫蚀谷", dark:1, f:(S,L)=>{ if(Math.random()<(talentOwned("ming_4")?0.52:0.4)+combatBonus()){L.add(`第${S.age}岁，万虫蚀谷，虫潮漫过山门。你且战且退，反在虫腹间隙里练出一手蛇形游身步`,1);L.gain(8);} else {L.add(`第${S.age}岁，万虫蚀谷，你的洞府被啃去半壁，多年积蓄毁于虫口，你蹲在灰堆里半天没说话`,2);S.prog*=0.88;} }},
+  {w:3,  t:"义庄夜话", lucky:1, f:(S,L)=>{L.add(`第${S.age}岁，义庄借宿，守庄的老尸与你聊了半宿前尘往事。临别时，它从棺材缝里摸出半页手札送你`,1);L.gain(5);L.key("义庄夜话得手札",1);}},
+  {w:3,  t:"天外飞舟", lucky:1, f:(S,L)=>{ if(Math.random()<0.5){L.add(`第${S.age}岁，一艘残破飞舟自云层坠落，砸出十里烟尘。你第一个赶到，舱中灵材尽归你手`,1);L.gain(15);L.key("天外飞舟遗宝",1);} else {L.add(`第${S.age}岁，天外飞舟坠落引来群修哄抢，你只捡了两块船板回来——倒也坚固耐用`);L.gain(1);} }},
+  {w:3,  t:"血月当空", dark:1, f:(S,L)=>{ if(S.gu.c==="邪蛊"){L.add(`第${S.age}岁，血月当空，万蛊伏啸。你的本命蛊却仰首长鸣，趁月吞辉，威能暗涨`,1);L.gain(9);} else if(S.gu.c==="保命"){L.add(`第${S.age}岁，血月当空，凶兽夜嚎。你闭关不出，本命蛊护住心神，一夜无梦`);L.gain(0.5);} else {L.add(`第${S.age}岁，血月当空，你盯着窗外那轮红得不像话的月亮，一夜没敢合眼，心绪难平`,2);S.prog*=0.93;} }},
+  {w:3,  t:"断崖悟剑", f:(S,L)=>{ if(Math.random()<0.35+combatBonus()){L.add(`第${S.age}岁，断崖观瀑七日，你在水声轰鸣中忽然握住了什么——出手的瞬间，连瀑布都为你分了道`,1);L.gain(8);L.key("断崖悟出剑意",1);} else {L.add(`第${S.age}岁，断崖坐了七日，只悟出八个字：水往下流，人往高处走`);L.gain(0.5);} }},
+  {w:2,  t:"蛊灵初醒", f:(S,L)=>{L.add(`第${S.age}岁，本命蛊忽然用触须轻轻碰了碰你的手背——它认得你了。你心里某个很硬的地方，软了一下`,1);S.daoHeart=(S.daoHeart||0)+1;L.gain(2);L.key("本命蛊灵性初醒",2);}},
+  {w:2,  t:"前世故人", f:(S,L)=>{ if(S.reborn||meta.level>=5){L.add(`第${S.age}岁，街角一个陌生背影让你鼻尖一酸——你不认得他，他却像认得你。这一面，你替前世看的`,1);L.gain(4);L.key("前世故人一面",2);} else {L.add(`第${S.age}岁，一个陌生行商冲你拱手笑了笑，你莫名也回了一礼，各自走远`);L.gain(0.5);} }},
+  {w:3,  t:"坊市大火", dark:1, f:(S,L)=>{ if(Math.random()<0.5){L.add(`第${S.age}岁，坊市深夜走水，火光映红半城。你冒火抢出三箱灵材，转手卖了高价——火烧连营，倒是替你省了本钱`,1);L.gain(7);} else {L.add(`第${S.age}岁，坊市大火殃及你的洞府，积蓄烧去大半。你在灰烬里坐了半宿，天亮才起身`,2);S.prog*=0.9;} }},
+  {w:1.5,t:"魔剑遗鸣", lucky:1, f:(S,L)=>{ tryChain(S,L,"mojian",`荒庙方向又传来一阵剑鸣，你无心他顾`,`你路过那座荒庙，断剑埋剑处芳草萋萋。有些剑，一生只能拔一次。`); }},
+  {w:1.5,t:"古仙洞府", lucky:1, f:(S,L)=>{ tryChain(S,L,"dongfu",`地脉再度异动，你分身乏术，只在心里记下了方位`,`你又寻到一处相似的地脉，进去一看，只是寻常溶洞。古仙的洞府，一生只会为你开一次门。`); }},
+  {w:1.5,t:"宿敌结怨", f:(S,L)=>{ tryChain(S,L,"suDi",`那个讨厌的身影又从你眼前晃了过去`,`宿敌的名字你早已忘记，江湖上再没人提那桩旧怨。`); }},
+  {w:1.5,t:"瘟疫围村", dark:1, f:(S,L)=>{ tryChain(S,L,"wenYi",`山那边的疫情还没平息，你无力分身`,`又一场时疫过去了。这一次，村人自己熬了过来。`); }},
+  {w:1.3,t:"灵溪旧约", f:(S,L)=>{ tryChain(S,L,"lingxi",`灵溪畔又起了雾，你无心他顾`,`灵溪的水还是那么清。你站在岸边想：有些人不必再见，记得就好。`); }},
+  {w:1.3,t:"空窍生窍", f:(S,L)=>{ tryChain(S,L,"kongqiao",`窍中那点异动，此刻无暇理会`,`空窍深处再无声息。那道浅痕还在，故事已经讲完了。`); }},
+  {w:1.3,t:"蛊市风波", f:(S,L)=>{ tryChain(S,L,"gushi",`蛊市的热闹，此刻与你无关`,`蛊市依旧熙熙攘攘，你的铺子早已关张。做买卖的日子回不去了，也不想回。`); }},
+  {w:1.3,t:"边荒征召", dark:1, f:(S,L)=>{ tryChain(S,L,"bianhuang",`边荒的号角声远远传来，你按下了心思`,`边荒又起烽烟，但这一次，征召名单上没有你。老卒说过：打完该打的仗，就回家。`); }},
+  {w:1.3,t:"守墓人", f:(S,L)=>{ tryChain(S,L,"shoumu",`山中又添了一座新坟，你只能远远看上一眼`,`那座坟你再没去过。守过的墓，一辈子守一次，就够了。`); }},
+  {w:1.2,t:"双生蛊", f:(S,L)=>{ tryChain(S,L,"shuangsheng",`本命蛊在窍中翻了个身，似有话说，你暂难分身`,`本命蛊安安静静伏在窍底。双生的传说听过了就好，你的蛊，只有一个。`); }},
+  {w:1.2,t:"镜中人", lucky:1, f:(S,L)=>{ tryChain(S,L,"jingzhong",`那面古镜的传说又在耳边响起，你只笑了笑`,`你后来又见过几面铜镜，镜中都只有你自己。该认的，你早就认了。`); }},
+  {w:1.2,t:"蝉蜕", f:(S,L)=>{ tryChain(S,L,"chanming",`窗台上又落了一枚蝉蜕，你来不及细看`,`秋蝉年年鸣，蝉蜕年年有。你不再捡了——那只属于某一年的秋天。`); }},
+  {w:1.3,t:"花酒巷", f:(S,L)=>{ tryChain(S,L,"huajiu","花酒巷的酒香又飘过来了，你此刻无心生意","花酒巷早已换了东家。你偶尔路过，闻一闻，就走。"); }},
+  {w:1.3,t:"寒潭少女", lucky:1, f:(S,L)=>{ tryChain(S,L,"hantan","寒潭方向寒气凛冽，你绕道而行","寒潭早被后来人占了练功。那块石头还在你家案头上。"); }},
+  {w:1.3,t:"人祖传说", f:(S,L)=>{ tryChain(S,L,"renzu","茶棚里又在讲人祖的故事，你听过了，只剩半段在耳边打转","说书先生换了新段子。人祖的故事你记在心里，不用再听第二遍。"); }},
+  {w:1.3,t:"红莲遗蜕", dark:1, f:(S,L)=>{ tryChain(S,L,"honglian","红莲业火的传闻又起，你按下了心思","红莲的传闻渐渐淡了。烧过的天，终究只是传说。"); }},
+  {w:1.2,t:"僵尸夜话", dark:1, f:(S,L)=>{ tryChain(S,L,"jiangshi","义庄方向又有托梦的传闻，你摇了摇头","你再也没有收到过义庄的消息。有些人，只托付一次。"); }},
+  {w:1.3,t:"望月传承", f:(S,L)=>{ tryChain(S,L,"wangyue","家族大比的锣鼓又敲响了，你按下了心思","家族大比年年有，传承的故事，你这一辈已经讲完了。"); }},
+  {w:1.2,t:"说书人·尊者史诗", f:(S,L)=>{ const st=["红莲魔尊，寿元三千年——尊者中最短命的一个。他烧尽了寿数，只为把天烧红一次。","星宿仙尊算尽天机，却算不出自己哪一天走。","尊者的故事听完了，你发现自己记住的不是他们的强，是他们的狂。"]; const seg=st[Math.floor(Math.random()*st.length)]; L.add(`第${S.age}岁，茶棚说书人开讲尊者史诗——${seg}`); L.gain(0.5); }},
+  {w:1.2,t:"说书人·魔头重生", f:(S,L)=>{ L.add(`第${S.age}岁，说书人压低声音：“知道为什么每五百年，江湖就要出一个大魔头吗？”满座无人应答。他自问自答：“因为有人不肯老，也不肯死。”你把杯中酒一饮而尽。`); L.gain(0.5); L.key("听魔头重生传说",1); }},
+  {w:1.2,t:"说书人·人祖三问", f:(S,L)=>{ L.add(`第${S.age}岁，说书人讲人祖临终三问：“我这一生，是借来的，还是我自己的？”无人能答。他收摊时看了你一眼：“小友，你想好了，来告诉我。”`); L.gain(0.5); }},
+  {w:1.15,t:"青山旧印",f:(S,L)=>{tryChain(S,L,"qingshan","青山石亭的旧印在雨里显出半边，你决定走近看看","青山石亭已经塌了，半枚旧印却还在别人的族谱里。")}},
+  {w:1.15,t:"白鹿渡",f:(S,L)=>{tryChain(S,L,"bailu","渡口白鹿回头望你，像在等一张迟到的地图","白鹿渡只剩一截旧桩，河水替你把那段路记着。")}},
+  {w:1.15,t:"月河灯",lucky:1,f:(S,L)=>{tryChain(S,L,"yuehe","月河漂来一盏无人认领的灯，你听见水下有人叹息","月河灯火年年亮，你已不必再替谁守一夜。")}},
+  {w:1.1,t:"无音谷",dark:1,f:(S,L)=>{tryChain(S,L,"wuyin","无音谷的石碑上多了一行新字，像在等你补完一句真话","无音谷依旧没有回声，你带走的那句真话却没有消失。")}},
+  {w:1.1,t:"黄粱梦蛊",lucky:1,f:(S,L)=>{tryChain(S,L,"huangliang","枕边落下一只梦蛊，你在梦里听见自己叩仙门的声音","黄粱梦散了，你醒来时只记得有人叫过你的本名。")}},
+  {w:1.1,t:"神木渡",f:(S,L)=>{tryChain(S,L,"shenmudu","两山之间的神木又替人挡住蛊潮，你听见树心里有年轮翻页","神木的影子仍在山谷里，哪怕树身早已被做成桥。")}},
+  {w:1.05,t:"沧海遗舟",lucky:1,f:(S,L)=>{tryChain(S,L,"canghai","潮水退去，古舟露出一寸船骨，你听见里面有第二个心跳","沧海没有仙山，只有一艘不肯彻底沉没的旧舟。")}},
+  {w:1.1,t:"雪中药人",dark:1,f:(S,L)=>{tryChain(S,L,"fengxue","雪线下倒着一个采药人，怀里的蛊丹还捂得温热","雪山药路年年封冻，有些人却总会在冬天回来。")}},
+  {w:1.05,t:"七星棋局",f:(S,L)=>{tryChain(S,L,"qixing","破庙里七颗星接连亮起，棋盘上空着一手等你落下","七星棋局已经收盘，最后一子留在你心里。")}},
+  {w:1.05,t:"烟关旧客",f:(S,L)=>{tryChain(S,L,"yanguan","烟关驿站只亮一盏灯，斗笠客把一封无名信推到你面前","烟关换了老板，柜底那盏灯却还等着一个知道来处的人。")}},
+  {w:1.0,t:"星河问渡",lucky:1,f:(S,L)=>{tryChain(S,L,"xinghe","渡劫前夜星河下坠，摆渡人又问你要带谁过河","星河已经归位，那一问却陪你走了很远。")}},
+  {w:1.0,t:"渡劫碑",dark:1,f:(S,L)=>{tryChain(S,L,"dujiebei","荒原渡劫碑最下方空着一行，风把你的名字吹到碑前","渡劫碑碎成垫脚石，失败者终于替后来人铺了路。")}}];
+/* 人格×事件权重标签：soc社交 quiet独处 craft实务 warm情义（lucky/dark 标注在事件上） */
+const EVFLAGS = {
+  "同辈切磋":{soc:1},"族中大比":{soc:1},"秘境竞逐":{soc:1},"家族恩怨":{soc:1},"邻里争端":{soc:1},"家族任务":{soc:1,craft:1},
+  "道侣情缘":{soc:1,warm:1},"故人重逢":{soc:1,warm:1},"红尘历练":{warm:1},
+  "灵田历练":{quiet:1,craft:1},"灵泉悟道":{quiet:1},"闭关瓶颈":{quiet:1},
+  "坊市淘宝":{craft:1},"蛊田瘟病":{craft:1}
+};
+function personaEventMul(ev){
+  if(!S||!S.persona) return 1;
+  const f=EVFLAGS[ev.t]; if(!f) return 1;
+  const p=S.persona; let w=1;
+  if(f.soc)   w *= p.E>0?1.5:0.7;
+  if(f.quiet) w *= p.E>0?0.7:1.5;
+  if(f.lucky) w *= p.N>0?1.35:0.8;
+  if(f.craft) w *= p.N<0?1.35:0.8;
+  if(f.warm)  w *= p.T<0?1.5:0.8;
+  return w;
+}
+/* 命运抉择：每局随机出现 2~3 次，选择至少改变一项结果；pk = 该选项对应的人格取向 */
+const CHOICES = [
+  {t:"血色山道", q:"山脚村落遭蛹潮屠戮，哀嚎阵阵。是出手相救，还是趁乱取宝？",
+   A:{t:"🛡 护族救人", pk:"F", d:"道心坚定 · 寿元 +3", f:()=>{S.lifespan+=3;S.daoHeart=(S.daoHeart||0)+1;return "率众死战，救下满村老幼。道心愈坚，寿元 +3";}},
+   B:{t:"💰 趁乱夺宝", pk:"T", d:"战力大增 · 寿元 -2", f:()=>{S.lifespan-=2;const g=gainProg(6);return `于废墟中掘得上古遗物，战力大增（+${Math.floor(g)}），却夜夜难眠，寿元 -2`;}}},
+  {t:"闭关抉择", q:"瓶颈迟迟不破。是继续安稳闭关，还是出门寻找机缘？",
+   A:{t:"🧘 稳定闭关", pk:"J", d:"突破进度大增", f:()=>{const T=threshold(S.rank,S.stage);S.prog+=T*0.35;S.pow+=T*0.35;return "水磨工夫，稳扎稳打，突破进度大增";}},
+   B:{t:"🌄 冒险寻缘", pk:"P", d:"五五开：大机缘或重伤", f:()=>{ if(Math.random()<0.5){const g=gainProg(12);return `奇遇连连，收获惊人（战力 +${Math.floor(g)}）！`;} S.lifespan-=4;S.prog*=0.8;return "机缘未得，反遭凶险，重伤而归，寿元 -4";}}},
+  {t:"道途抉择", q:"正道家族向你递来橄榄枝：拜入宗门，还是独行野路？",
+   A:{t:"⛩ 加入正道", pk:"J", d:"突破更稳 · 凶险减少", f:()=>{S.path="正道";S.lifespan+=2;updateLifeSub();return "拜入正道宗门，有师门庇护：突破更稳，凶险事件减少";}},
+   B:{t:"🗡 独行邪修", pk:"P", d:"战力暴涨 · 凶险更多", f:()=>{S.path="邪修";const g=gainProg(8);updateLifeSub();return `踏上独行邪路，功法诡谲，战力暴涨（+${Math.floor(g)}），但仇家遍地、凶险更多`;}}},
+  {t:"坊市传闻", q:"有人说废窟深处有上古命蛊遗蜕，但进去的三人无一归来。",
+   A:{t:"🔥 倾囊购图", pk:"N", d:"损耗积蓄 · 机缘渐显", f:()=>{S.prog*=0.9;S.luckyExtra=(S.luckyExtra||0)+0.06;return "重金购得残图，此后机缘之事频现，只是进度受挫一成";}},
+   B:{t:"🚶 一笑置之", pk:"S", d:"安稳修炼一年", f:()=>{const g=gainProg(2);return "传闻当不得真，安心修炼一年";}}},
+  {t:"论道大会", q:"邻郡举办论道大会，数百修士齐聚，各展所学。",
+   A:{t:"⚔ 上台论战", pk:"E", d:"锋芒毕露 · 战力声望双收", f:()=>{const g=gainProg(8);return `连败十七位同辈，技惊四座，战力大增（+${Math.floor(g)}）`;}},
+   B:{t:"🍵 台下煮茶", pk:"I", d:"静观诸家 · 暗记所长", f:()=>{const T=threshold(S.rank,S.stage);S.prog+=T*0.25;return "台上刀光剑影，台下你已默记诸家之长，进度大增";}}},
+  {t:"残卷抉择", q:"你得到半卷残功，可补自身缺憾，但需以寿元温养方能大成。",
+   A:{t:"📖 补全残功", pk:"T", d:"进度大增 · 寿元 -2", f:()=>{S.lifespan-=2;const T=threshold(S.rank,S.stage);S.prog+=T*0.5;return "以两年寿元为薪，残功大成，突破进度暴涨";}},
+   B:{t:"🔥 付之一炬", pk:"F", d:"道心通明 · 寿元 +2", f:()=>{S.lifespan+=2;S.daoHeart=(S.daoHeart||0)+1;return "残功有缺天注定，强求恐入歧途。焚卷那一刻，道心竟通透几分";}}},
+  {t:"百年寿蛊之抉择", q:"你历经生死，终于到手一枚百年寿蛊。是服下增寿，还是用它合炼本命蛊、博更高的境界？",
+   A:{t:"🍵 服下增寿", pk:"T", d:"寿元 +100", f:()=>{S.lifespan+=100;return "寿蛊入腹，枯木回春——寿元 +100";}},
+   B:{t:"🔥 合炼本命蛊", pk:"N", d:"本命蛊威能永久提升", f:()=>{S.gu={...S.gu,g:S.gu.g*1.35};return "以寿蛊为引合炼，本命蛊威能永久提升三成半！寿元虽短，大道更宽";}}}
+];
+/* 人格倾向：返回该人格偏好的选项键 "A"/"B" 或 null */
+function personaPrefKey(ch){
+  if(!S||!S.persona) return null;
+  const p=S.persona;
+  const match=pk=>!!pk&&((pk==="E"&&p.E>0)||(pk==="I"&&p.E<0)||(pk==="N"&&p.N>0)||(pk==="S"&&p.N<0)||(pk==="T"&&p.T>0)||(pk==="F"&&p.T<0)||(pk==="J"&&p.J>0)||(pk==="P"&&p.J<0));
+  return match(ch.A.pk)?"A":(match(ch.B.pk)?"B":null);
+}
+/* 线性剧情链（roguelike）：跨年份推进、分支抉择、一世内至多两条 */
+const CHAINS = {
+  huajiu:{t:"花酒巷", steps:[
+    {gap:[2,4], txt:"山寨下有家倒闭的酒坊，你盘了下来，用三只酒蛊试着酿第一坛花酒。开坛那天，连狗都绕着酒坊转了三圈。", f:(S,L)=>{L.key("盘下花酒坊",1);}},
+    {gap:[2,4], branch:{p:0.5,
+      a:{txt:"头一坛酸得像醋。第二坛，你往酒里添了一勺蜜、三朵桂花——开坛那日，半条巷子都醉了。", f:(S,L)=>{L.gain(8);L.key("花酒酿成，巷内扬名",2);}},
+      b:{txt:"酒始终酿不好。你倒是从酒渣里悟出一点发酵的道理：急火出不了好酒，慢工才能出真味——修行，也是一样的火候。", f:(S,L)=>{L.gain(3);}}
+    }},
+    {gap:[3,6], branch:{p:0.5,
+      a:{txt:"花酒的名声传开了，别堡的蛊师也专程打马来买。你把酒坊交给伙计，自己揣着一小坛上了路——生意是伙计的，路是自己的。", f:(S,L)=>{L.gain(12);L.key("花酒巷扬名四方",3);}},
+      b:{txt:"酒坊毁于一场官火。你站在灰烬前把最后半坛酒喝完，说：生意没了，手艺还在。说罢拍拍屁股上了山。", f:(S,L)=>{L.gain(4);}}
+    }, end:true}
+  ]},
+  hantan:{t:"寒潭少女", steps:[
+    {gap:[2,4], txt:"寒潭边你撞见一位少女在冬月里赤足练功，周身三尺结着冰花。她看你一眼，眼神冷得像刀：“看什么？滚。”", f:(S,L)=>{L.gain(1);}},
+    {gap:[2,4], branch:{p:0.5,
+      a:{txt:"你夜夜隔潭练功，她夜夜在对面。谁也没说过话，但你们渐渐把彼此当成了度量进度的那把尺。", f:(S,L)=>{L.gain(6);L.key("寒潭隔水为尺",1);}},
+      b:{txt:"你的真元一近潭边就滞涩。后来才知她身负十成资质的绝世体质，天地元气围着她转——你连靠近，都是奢侈。", f:(S,L)=>{L.gain(1);}}
+    }},
+    {gap:[4,8], branch:{p:0.45,
+      a:{txt:"多年后你名动一方，听说那位寒潭少女也成了名震北地的人物。你们再没见过。可你始终记得那潭水的冷——它逼着你，从不敢懈怠一天。", f:(S,L)=>{L.gain(10);L.key("寒潭旧影，不敢懈怠",2);}},
+      b:{txt:"潭水开春就化了，她也走了，没打招呼，只在石上留了一行字：“你比我勤。”你把那块石头搬回了家，摆在案头，一摆就是一辈子。", f:(S,L)=>{L.gain(4);S.lifespan+=2;}}
+    }, end:true}
+  ]},
+  renzu:{t:"人祖传说", steps:[
+    {gap:[2,4], txt:"茶棚里来了个说书先生，惊堂木一拍：“今日讲古——人祖与寿蛊！”满棚霎时寂然。", f:(S,L)=>{L.gain(0.5);}},
+    {gap:[2,4], branch:{p:0.5,
+      a:{txt:"先生说：人祖百岁那年，命规矩二蛊去捉寿蛊，捉来一只八十年的。人祖服下，白发转青丝。满堂喝彩里，你却听出了别的——原来从人祖起，人就在跟天借寿。", f:(S,L)=>{L.gain(5);L.key("听人祖借寿旧事",1);}},
+      b:{txt:"先生讲到规矩二蛊立约：第一次替人祖捉寿蛊，第二次替他捉尽天下万蛊，第三次——没有第三次。你心里咯噔一下：原来天底下的便宜，都有次数。", f:(S,L)=>{L.gain(3);}}
+    }},
+    {gap:[3,6], branch:{p:0.4,
+      a:{txt:"散场时先生单独看了你一眼：“小友面相，是要跟天借寿的人。记着——借了，是要还的。”你追出门去，茶棚已空，只剩惊堂木上一道旧裂纹，深得像一道掌痕。", f:(S,L)=>{L.gain(6);L.key("先生赠言：借了要还",2);}},
+      b:{txt:"你当时只觉得故事好听。多年后寿元将尽，你忽然想起那句“借了是要还的”——可惜，明白得太晚。", f:(S,L)=>{L.gain(1);}}
+    }, end:true}
+  ]},
+  honglian:{t:"红莲遗蜕", steps:[
+    {gap:[3,5], txt:"边荒传闻：红莲魔尊的遗蜕现世。那位尊者寿元三千年，是尊者里最短命的一个——因为他把寿数，全烧成了一炉三百年不熄的红莲业火。", f:(S,L)=>{L.gain(1);L.key("闻红莲遗蜕",1);}},
+    {gap:[2,4], branch:{p:0.5,
+      a:{txt:"你随人流深入戈壁。业火千里，靠近者道基俱损。你远远看了一眼就退了——有些火，看一眼就够了。", f:(S,L)=>{L.gain(2);}},
+      b:{txt:"你仗着修为深入火域，硬生生取回一片红莲瓣。当夜高烧不退，梦里全是业火焚天的景象。", f:(S,L)=>{S.lifespan-=3;L.gain(6);L.add(`这一趟火域，烧掉了你三年寿数`,2);}}
+    }},
+    {gap:[3,6], branch:{p:0.4,
+      a:{txt:"那片红莲瓣在你窍中慢慢融化。三千年前的魔尊，竟借这一点残焰给你传了一句话：“寿元三千年，最短。可我烧过的天，比所有尊者的都红。”你久久无言，只觉得窍里那点温热，烫得很。", f:(S,L)=>{L.gain(16);L.key("红莲遗言，尊者之狂",4);}},
+      b:{txt:"红莲瓣终究化了，什么也没留下。你只在梦里记得那片红——红得像一句没说完的狂言，红得让人不服老。", f:(S,L)=>{L.gain(3);}}
+    }, end:true}
+  ]},
+  jiangshi:{t:"僵尸夜话", steps:[
+    {gap:[2,4], txt:"一位寿元将尽的同乡老蛊师托人捎话：他决定转修僵尸道，不生不死，换几十年残寿。他只求你一件事——常去看看他。", f:(S,L)=>{L.key("故人转修僵尸道",1);}},
+    {gap:[2,4], branch:{p:0.5,
+      a:{txt:"你去了。他半僵不活地坐在墓里，还能说话。他笑着说：“不生不死，也是一种活着。你别学我——但也别笑我。”", f:(S,L)=>{L.gain(3);L.key("僵尸夜话：别学我也别笑我",1);}},
+      b:{txt:"你终究没敢去。托梦之后，再无音讯。你偶尔会想：他现在坐在黑暗里，是不是也在等一个没来的人。", f:(S,L)=>{L.gain(0.5);}}
+    }},
+    {gap:[4,8], branch:{p:0.4,
+      a:{txt:"十年后他彻底成了僵，灵智渐失。你最后一次去看他，他浑浊的眼里认出了你，喉咙里挤出一声笑——还是你年轻时最爱的那种笑。你替他掩上墓门，把这一声笑记了一辈子。", f:(S,L)=>{L.gain(8);L.key("故友成僵，一诺十年",3);}},
+      b:{txt:"再后来，连墓门都塌了。你在废墟前烧了一炷香，轻声说：老哥，来世投个好胎——别再跟天借寿了。", f:(S,L)=>{L.gain(2);}}
+    }, end:true}
+  ]},
+  wangyue:{t:"望月传承", steps:[
+    {gap:[2,4], txt:"家族大比在即，传承蛊的名额只有一个。所有人都盯着它，包括你最看不上的那个人——以及，最看不上你的那些人。", f:(S,L)=>{L.gain(2);L.key("争传承蛊名额",1);}},
+    {gap:[2,4], branch:{p:0.5,
+      a:{txt:"你一路连胜。决赛前夜，对手登门奉上厚礼，求你让他一回。你原封退回，只留一句：“名额可以让，路不能让——战场上见真章。”", f:(S,L)=>{L.gain(4);L.key("退礼明志",2);}},
+      b:{txt:"你阴沟翻船，输给了一个后辈，成了满族茶余饭后的笑柄。你把自己关了三天，第四天出门，照常练功。笑吧，笑不死人，练不死人。", f:(S,L)=>{S.prog*=0.95;L.gain(1);}}
+    }},
+    {gap:[3,6], branch:{p:0.45,
+      a:{txt:"决战之日，你赢了。长老把传承蛊放进你掌心，只说了一句：“它认的不是天赋，是心性。”你握着那枚温热的蛊，忽然想起六岁时测灵大典上，那个被人嘲笑的自己。", f:(S,L)=>{L.gain(15);S.bonus*=1.03;L.key("夺得传承蛊",4);}},
+      b:{txt:"你又输了。可这一次，满场没有笑声——你与对手缠斗到最后一刻，连长老都站了起来。散场时，那后辈朝你抱拳，你回了一拳，打在他肩上。有些认可，不需要赢。", f:(S,L)=>{L.gain(6);L.key("虽败犹荣，后辈抱拳",2);}}
+    }, end:true}
+  ]},  lingxi:{t:"灵溪旧约", steps:[
+    {gap:[3,6], txt:"你在灵溪边救起一个溺水的孩子。他怕得发抖，把半块馍塞进你手里，说将来一定还你。你笑了笑，没当回事。", f:(S,L)=>{L.gain(1);}},
+    {gap:[3,6], branch:{p:0.5,
+      a:{txt:"许多年后，一个无名蛊师在坊市替你付清了整账，转身就走。你愣在原地，忽然认出他腰上挂着的半块玉——同那半块馍的纹路，一模一样。", f:(S,L)=>{L.gain(3);L.key("故人来还旧约",2);}},
+      b:{txt:"那人到底没再出现。你偶尔路过灵溪，会想起那半块馍。溪水年年涨落，人却不一定都守约。", f:(S,L)=>{L.gain(0.5);}}
+    }},
+    {gap:[4,8], branch:{p:0.4,
+      a:{txt:"边荒传来消息：当年那孩子成了守边蛊师，战死前托人送来一封信，信里夹着那半块玉。信上只有一句：“还你的，不是馍，是一辈子的情分。”", f:(S,L)=>{S.lifespan+=2;L.key("收到故人遗信",3);}},
+      b:{txt:"你始终没等到他还你东西。可不知为何，你在灵溪边站了整夜，心里却比往年都暖。", f:(S,L)=>{}}
+    }, end:true}
+  ]},
+  kongqiao:{t:"空窍生窍", steps:[
+    {gap:[3,6], txt:"闭关时，你的空窍深处传来一声极轻的裂响。你内视一看，窍壁之上，竟生出一道新窍的影子。", f:(S,L)=>{L.gain(4);L.key("空窍异动",1);}},
+    {gap:[2,5], branch:{p:0.5,
+      a:{txt:"你以元石与温养之法日日浇灌那道虚影。半月后，虚影凝实——你得了罕见的第二空窍雏形，吞吐真元比旁人多出一线。", f:(S,L)=>{L.gain(9);L.key("修得第二空窍雏形",2);}},
+      b:{txt:"那道虚影终究散去，只在窍壁上留下一道浅痕。你并不懊恼——有痕，说明路还没走到头。", f:(S,L)=>{L.gain(1);}}
+    }},
+    {gap:[4,8], branch:{p:0.5,
+      a:{txt:"多年后你方知，第二空窍本可炼成蛊形长存，只是你当年缺一味主材。你记下那个名字，留待来世再试。", f:(S,L)=>{S.reborn_hint=1;L.gain(2);L.key("记下第二空窍的机缘",1);}},
+      b:{txt:"那道浅痕伴了你一辈子。临终前你摸着胸口想：有些窍，开过，就算没开成，也比没开过强。", f:(S,L)=>{}}
+    }, end:true}
+  ]},
+  gushi:{t:"蛊市风波", steps:[
+    {gap:[2,4], txt:"你在蛊市盘下一间小铺。头一回做买卖，被老蛊商坑了一袋元石，买回三只病恹恹的蛊虫。", f:(S,L)=>{L.gain(0.5);}},
+    {gap:[2,4], branch:{p:0.5,
+      a:{txt:"你没扔那三只病蛊，反而日日以真元喂之。三个月后，其中一只蜕壳痊愈，竟是一只稀有血脉的幼蛊。", f:(S,L)=>{L.gain(10);L.key("病蛊蜕壳，意外之喜",2);}},
+      b:{txt:"三只病蛊相继死了。你把它们埋在铺后小院里，立了个一寸高的碑。同行笑你傻，你没解释。", f:(S,L)=>{}}
+    }},
+    {gap:[3,6], branch:{p:0.5,
+      a:{txt:"当初坑你的老蛊商家道中落，流落到你的铺前。你给他留了碗热饭。他走时没回头，可第二日，你的铺子门口多了一袋元石，和一枚品相极佳的蛊卵。", f:(S,L)=>{L.gain(8);L.key("市井恩怨，一饭相还",2);}},
+      b:{txt:"你在蛊市越做越精，再没人能坑你。可不知从哪天起，你路过那家倒闭的老铺，总要多看两眼。", f:(S,L)=>{L.gain(2);}}
+    }, end:true}
+  ]},
+  bianhuang:{t:"边荒征召", steps:[
+    {gap:[2,4], txt:"家族文书送到：边荒蛊潮再起，每户抽一丁出征。轮到你时，你没推，背起行囊就走了。", f:(S,L)=>{L.gain(3);L.key("应征边荒",1);}},
+    {gap:[2,4], branch:{p:0.55,
+      a:{txt:"边荒三个月，你跟着老卒学会了看蛊潮的走向。那一夜潮来，你因这双眼睛救了半支队伍。", f:(S,L)=>{L.gain(7);L.key("边荒救下同袍",2);}},
+      b:{txt:"你第一次直面蛊潮时手抖得握不住蛊。老卒替你挡了一下，臂上留了道疤。他没说什么，你也没谢，但有些东西，从此不一样了。", f:(S,L)=>{L.gain(1);}}
+    }},
+    {gap:[3,7], branch:{p:0.45,
+      a:{txt:"潮退。家族论功行赏，你分到一块封地和半库元石。你只留了最小的一份，其余散给了阵亡同袍的家人。那夜，满城烛火为你而亮。", f:(S,L)=>{L.gain(8);L.key("边荒论功，散财安魂",3);}},
+      b:{txt:"潮退了，可那个替你挡过一刀的老卒，死在了最后一次冲锋里。你在他坟前坐了一夜，天亮时起身，腰杆挺得比谁都直。", f:(S,L)=>{L.gain(4);L.key("替老卒照看遗孤",2);}}
+    }, end:true}
+  ]},
+  shoumu:{t:"守墓人", steps:[
+    {gap:[2,4], txt:"一位陌生的老蛊师临终前把一枚蛊卵托付给你，说替他守三个月墓。你应下了。", f:(S,L)=>{}},
+    {gap:[2,4], branch:{p:0.5,
+      a:{txt:"老蛊师的墓，你守了一个月、两个月、三个月，又守了下去。村人笑你守个素不相识的墓，你没答话，只是每日在坟前擦那枚蛊卵。", f:(S,L)=>{L.key("为无名老蛊师守墓",1);}},
+      b:{txt:"墓前荒草长了又枯。你渐渐明白，他托付的不是墓，是那枚卵——和那句没说完的话。", f:(S,L)=>{L.gain(0.5);}}
+    }},
+    {gap:[3,6], branch:{p:0.35,
+      a:{txt:"第七年清明，那枚蛊卵裂了。破壳的蛊虫绕坟三匝，落回你掌心时，你听见一句极轻的话：“谢你，替我活过了头七。”你守到第十年才离开。", f:(S,L)=>{L.gain(12);L.key("守墓十年，蛊卵破壳",3);}},
+      b:{txt:"那枚卵终其一生没有孵化。你把卵葬进他坟里，另立了一块碑，碑上没有字。有人问，你说：有些话，只讲给值得听的人。", f:(S,L)=>{L.gain(2);}}
+    }, end:true}
+  ]},
+  shuangsheng:{t:"双生蛊", steps:[
+    {gap:[2,4], txt:"本命蛊忽然一分为二，两枚蛊虫互不相让，争着要你的真元，险些撑裂空窍。", f:(S,L)=>{S.prog*=0.97;}},
+    {gap:[2,4], branch:{p:0.5,
+      a:{txt:"你没有偏袒任何一方，把真元均分给它们。十日后，两蛊相安无事，竟在你窍内互为犄角，吞吐效率翻了一线。", f:(S,L)=>{S.bonus*=1.05;L.key("双生蛊共存，修为更盛",2);}},
+      b:{txt:"你偏宠了先诞生那一枚。另一枚日渐黯淡，终化流光散入窍壁——它离开前，轻轻碰了碰你的手背，像在道别。", f:(S,L)=>{L.gain(2);}}
+    }},
+    {gap:[3,6], branch:{p:0.4,
+      a:{txt:"多年后你才懂：双生蛊本是一体，分则争、合则盛。你撮合二者交尾相融，得了一枚前所未见的新蛊，气息浩瀚如渊。", f:(S,L)=>{L.gain(15);S.bonus*=1.05;L.key("双蛊相融，异蛊出世",3);}},
+      b:{txt:"黯淡那一枚的流光始终在你窍壁里留下一抹淡青。每逢修行困顿，那抹淡青便会亮一下，像故人远远地招了招手。", f:(S,L)=>{L.gain(6);}}
+    }, end:true}
+  ]},
+  jingzhong:{t:"镜中人", steps:[
+    {gap:[2,4], txt:"古洞中悬着一面无名铜镜。你只望了一眼，镜中人便不再随你动作——他隔着镜面，冲你笑了笑。", f:(S,L)=>{L.gain(0.5);}},
+    {gap:[2,4], branch:{p:0.5,
+      a:{txt:"镜中人道破你三桩不敢回想的旧事，句句见血。你听着，没有逃，也没有辩。镜中人叹道：“你倒是个敢认的。”", f:(S,L)=>{L.key("镜中自认，道心更明",2);}},
+      b:{txt:"镜中人笑你虚伪：护族是假，修行为假，连道心都是假的。你拂袖要走，却听见自己心里有个声音说：他说的，未必全错。", f:(S,L)=>{S.prog*=0.96;}}
+    }},
+    {gap:[3,6], branch:{p:0.4,
+      a:{txt:"第七日，你与镜中人对坐如老友。他说：“你赢不了我，因为我是你。”你说：“那我就不赢，我认。”话音落地，铜镜寸寸碎裂，镜中人走出来，化作一枚温热的印记，落在你眉心。", f:(S,L)=>{L.gain(14);L.key("镜中自渡，道果初成",3);}},
+      b:{txt:"你砸了那面镜。碎片飞溅时，你仿佛看见镜中人最后笑了一下，笑里竟有释然。多年后你梦见那面镜，镜中人已换成了另一个你，正平静地望着来路。", f:(S,L)=>{L.gain(4);}}
+    }, end:true}
+  ]},
+  chanming:{t:"蝉蜕", steps:[
+    {gap:[3,5], txt:"秋深时节，一只蝉落在你窗台上，蜕下空壳，无声飞走。你捏起那枚透明蝉蜕，忽然一阵恍惚——好像很多年前，也有人递过你同样的东西。", f:(S,L)=>{L.gain(2);L.key("拾得一枚蝉蜕",1);}},
+    {gap:[3,6], branch:{p:0.5,
+      a:{txt:"你把蝉蜕贴身收着。当夜梦里有人问你：“蝉鸣一夏，值得吗？”你在梦里答他：“值得不值得，鸣过了才知道。”", f:(S,L)=>{L.gain(3);}},
+      b:{txt:"你把蝉蜕埋回土里。秋霜落时，你心里那点说不清的牵挂，好像也一起入了土，静了。", f:(S,L)=>{L.gain(0.5);}}
+    }},
+    {gap:[4,8], branch:{p:0.35,
+      a:{txt:"晚年的某个黄昏，你忽然认出那枚蝉蜕的来历——是你上一世自己蜕下的。你放声大笑，笑着笑着眼角就湿了。原来轮回不是开始，是续写。", f:(S,L)=>{L.gain(8);L.key("认出前世蝉蜕，轮回豁然",3);}},
+      b:{txt:"那枚蝉蜕到底被你弄丢了。你找了很久，后来便不找了。你隐约觉得，它会在该回来的时候回来——就像有些人，你以为忘了，其实一直还在路上。", f:(S,L)=>{L.gain(2);}}
+    }, end:true}
+  ]},  mojian:{t:"魔剑遗鸣", steps:[
+    {gap:[2,4], txt:"荒庙枯骨手里握着一柄黑剑。你鬼使神差地把剑抽了出来——当夜，剑鸣如泣，整宿没停。", f:(S,L)=>{L.key("拾获魔剑",1);}},
+    {gap:[2,4], branch:{p:0.5,
+      a:{txt:"你以真元日夜温养剑身，魔剑渐渐安分，剑意如影随形，出招都利了三分。", f:(S,L)=>{L.gain(8);}},
+      b:{txt:"夜半剑鸣引动你的杀意，你差点对同门出手。压下心魔后，你惊出一身冷汗。", f:(S,L)=>{S.lifespan-=2;L.add(`这场无妄的心魔，折了你两年寿数`,2);}}
+    }},
+    {gap:[3,6], branch:{p:0.5,
+      a:{txt:"剑中老魔开口收你为徒。你受了它的传承，战力暴涨——代价是从此杀气缠身，寝食难安。", f:(S,L)=>{L.gain(18);S.lifespan-=4;L.key("受魔剑传承，战力暴涨",3);}},
+      b:{txt:"你终究折断了魔剑。断剑入土那一刻，你长出一口气，竟觉得前所未有的轻松。", f:(S,L)=>{S.daoHeart=(S.daoHeart||0)+1;L.gain(3);L.key("折断魔剑，道心更坚",2);}}
+    }, end:true}
+  ]},
+  dongfu:{t:"古仙洞府", steps:[
+    {gap:[2,4], txt:"你循着地脉的异动，寻到一座残破洞府的入口。石门之上，刻着半个残缺的仙字。", f:(S,L)=>{L.key("发现古仙洞府",1);}},
+    {gap:[2,4], branch:{p:0.55,
+      a:{txt:"机关重重，你屏息凝神步步为营，竟真的直入洞府深处。", f:(S,L)=>{L.gain(6);}},
+      b:{txt:"踏入的瞬间地砖翻转，你坠入暗河，呛着水挣扎了三日才爬上岸。", f:(S,L)=>{S.lifespan-=2;S.prog*=0.9;L.add(`这一趟暗河，折损不小`,2);}}
+    }},
+    {gap:[3,6], branch:{p:0.5,
+      a:{txt:"洞府深处，枯坐的老祖遗蜕前，一枚玉简破空飞入你眉心——古仙传承，择你为终！战力暴涨！", f:(S,L)=>{L.gain(22);L.key("得古仙传承",3);}},
+      b:{txt:"洞府核心只剩石壁上一句刻字：“来迟了。”你长叹一声，只搜刮了几卷残篇丹方。", f:(S,L)=>{L.gain(5);}}
+    }, end:true}
+  ]},
+  suDi:{t:"宿敌", steps:[
+    {gap:[3,6], txt:"同门师兄当众折辱于你，满堂哄笑。你没还手，只是把这个名字记进了心里。江湖路远，来日方长。", f:(S,L)=>{L.key("与宿敌结怨",1);}},
+    {gap:[3,6], branch:{p:0.5,
+      a:{txt:"狭路相逢。你先胜一阵，对方拂袖而去，眼底的恨意比刀还亮。", f:(S,L)=>{L.gain(4);}},
+      b:{txt:"再度交手，你败下阵来，伤养了半年。这口气，你咽不下。", f:(S,L)=>{S.lifespan-=2;L.add(`败绩刻在骨头上，也刻在你想赢的心上`,2);}}
+    }},
+    {gap:[4,8], branch:{p:0.5,
+      a:{txt:"终有一战。你押上一切赢了这一场，踩着他的肩膀站上高处——痛快！战力暴涨！", f:(S,L)=>{L.gain(16);L.key("了结宿敌之怨",3);}},
+      b:{txt:"终有一战。两败俱伤，他先咽的气，你也豁出去了半条命。值不值，只有你自己知道。", f:(S,L)=>{S.lifespan-=6;L.gain(10);L.key("与宿敌两败俱伤",2);}}
+    }, end:true}
+  ]},
+  wenYi:{t:"瘟疫围村", steps:[
+    {gap:[2,4], txt:"山下村庄起了瘟疫，尸骸枕藉，哭声顺着风往山上飘。你在高处看得真切。", f:(S,L)=>{L.key("遭逢瘟疫",1);}},
+    {gap:[2,4], branch:{p:0.5,
+      a:{txt:"你闭关数月钻研药理，配出方子派人下山，救活了大半个村。善名远播。", f:(S,L)=>{S.daoHeart=(S.daoHeart||0)+1;L.gain(4);L.key("瘟疫中救村",2);}},
+      b:{txt:"你封了山路，独善其身。夜里隐约的哭声顺着风上来，偶尔会飘进你的梦。", f:(S,L)=>{L.gain(0.5);}}
+    }},
+    {gap:[3,5], branch:{p:0.4,
+      a:{txt:"疫气散尽，幸存的村人在山口为你立了块长生牌位，香火不断。", f:(S,L)=>{S.lifespan+=3;L.gain(2);L.key("长生牌位",2);}},
+      b:{txt:"你终究还是染了疫气，大病一场，药石进出，折了好几年寿数。", f:(S,L)=>{S.lifespan-=4;L.add(`这一场大病，元气大伤`,2);}}
+    }, end:true}
+  ]
+}};
+
+/* 第二幕扩展：让世界从十八条回声继续长出新的枝桠。 */
+Object.assign(CHAINS, {
+  qingshan:{t:"青山旧印",steps:[
+    {gap:[2,4],txt:"青山脚下有座废弃石亭，亭柱上刻着半枚家族印。你认出那是祖辈迁徙前留下的记号，却没人记得它为何停在这里。",f:(S,L)=>{L.key("青山石亭的半枚旧印",1);}},
+    {gap:[2,5],branch:{p:0.5,a:{txt:"你沿着印记寻到一条断路，路尽头埋着一只空匣。匣底只有一句话：家可以换，来路不能忘。",f:(S,L)=>{L.gain(5);L.key("寻到祖辈断路",2);}},b:{txt:"你把半枚印拓下来，转身离开。后来每逢迁徙，你都把它压在行囊最底层，像压住一颗不肯安静的心。",f:(S,L)=>{L.gain(3);S.daoHeart=(S.daoHeart||0)+1;}}}},
+    {gap:[3,7],branch:{p:0.45,a:{txt:"晚年你终于在一块新石上补全了另一半。印合上的刹那，山风吹过，像有人在很远处说：回来过，就不算流离。",f:(S,L)=>{L.gain(12);L.key("补全青山旧印",3);}},b:{txt:"那半枚印随你入土。后人掘出时只当是残砖，没人知道它替一个人守了多少年的故乡。",f:(S,L)=>{L.gain(4);}}},end:true}
+  ]},
+  bailu:{t:"白鹿渡",steps:[
+    {gap:[2,4],txt:"渡口的白鹿不肯过河。摆渡人说，它在等一个拿着旧地图的人。你低头看了看自己袖中的残图，竟与它边角相合。",f:(S,L)=>{L.key("白鹿渡残图",1);}},
+    {gap:[2,5],branch:{p:0.5,a:{txt:"你陪白鹿走了一夜山路，地图上的墨线在月下重新显出。那不是藏宝图，是一条避开蛊潮的生路。",f:(S,L)=>{L.gain(8);L.key("为白鹿寻到归路",2);}},b:{txt:"你把地图交给摆渡人，自己留在渡口看了一场涨水。白鹿终于过河，回头望你一眼，像把一桩未说出口的谢意交还。",f:(S,L)=>{L.gain(4);S.lifespan+=1;}}}},
+    {gap:[4,8],branch:{p:0.4,a:{txt:"多年后你路过旧渡，摆渡人已换成一个孩子。孩子说白鹿年年回来，渡口每逢冬天都不结冰。",f:(S,L)=>{L.gain(10);L.key("白鹿年年归渡",3);}},b:{txt:"河道改了，旧渡成了荒滩。你在芦苇里找到半片地图，折好收起，像收起一段无人认领的路。",f:(S,L)=>{L.gain(3);}}},end:true}
+  ]},
+  yuehe:{t:"月河灯",steps:[
+    {gap:[2,4],txt:"月河每逢朔日便漂满灯盏。守灯人请你替他撑一夜船，说河底埋着许多没来得及说完的话。",f:(S,L)=>{L.key("替月河守灯",1);}},
+    {gap:[2,5],branch:{p:0.5,a:{txt:"你把一盏盏灯送到河心，灯影照出一张张陌生的脸。它们没有哭，只在水面上朝你点头。",f:(S,L)=>{L.gain(6);S.daoHeart=(S.daoHeart||0)+1;}},b:{txt:"你捞起一盏将熄的灯，灯里竟有一枚微弱蛊火。你把它带回窍中，往后的长夜多了一点暖。",f:(S,L)=>{L.gain(7);S.bonus*=1.03;L.key("月河捞起不灭蛊火",2);}}}},
+    {gap:[3,6],branch:{p:0.4,a:{txt:"守灯人临别送你一盏空灯：“有些人不是等你点亮，是等你承认黑暗也曾照见过你。”",f:(S,L)=>{L.gain(9);L.key("守灯人赠空灯",3);}},b:{txt:"月河忽然断流，所有灯盏停在半途。你等到天明，才发现河床上刻着一句：灯灭以前，已经照过。",f:(S,L)=>{L.gain(3);}}},end:true}
+  ]},
+  wuyin:{t:"无音谷",steps:[
+    {gap:[3,5],txt:"无音谷里听不见任何声音，连自己的心跳也像隔着一层雾。谷口石碑写着：带一句真话进来，带一句假话出去。",f:(S,L)=>{L.key("走入无音谷",1);}},
+    {gap:[2,5],branch:{p:0.5,a:{txt:"你在谷中说出最不愿承认的那件事。声音没有回响，胸口却像卸下一块石头。",f:(S,L)=>{S.daoHeart=(S.daoHeart||0)+1;L.gain(7);L.key("在无音谷认下一桩旧错",2);}},b:{txt:"你守口如瓶。沉默一路跟着你，直到谷底化成一只无形的蛊，贴在耳边问：不说，就等于没有吗？",f:(S,L)=>{S.prog*=1.04;L.gain(3);}}}},
+    {gap:[4,8],branch:{p:0.4,a:{txt:"出谷时你把那句真话写在石碑背面。后来有人说，谷里终于有了回声——不是声音，是愿意承认的人。",f:(S,L)=>{L.gain(12);L.key("为无音谷留下真话",3);}},b:{txt:"你带走了那只无形蛊。它从不替你说话，只在你想欺骗自己时，轻轻咬一下心口。",f:(S,L)=>{L.gain(5);}}},end:true}
+  ]},
+  huangliang:{t:"黄粱梦蛊",steps:[
+    {gap:[2,4],txt:"一只梦蛊落在你枕边，让你梦见自己已经成仙。梦里的山河对你俯首，只有一个卖酒的老人还叫你原来的名字。",f:(S,L)=>{L.key("梦见成仙的黄粱蛊",1);}},
+    {gap:[2,5],branch:{p:0.5,a:{txt:"你在梦里追问老人，他只说：“醒来以后，别把梦里的掌声当成天命。”你记住了这句话，梦便碎了。",f:(S,L)=>{S.daoHeart=(S.daoHeart||0)+1;L.gain(7);}},b:{txt:"你不愿醒来。梦中百年如一日，你终于摸到仙门，却在推门时看见门后站着另一个不肯醒的自己。",f:(S,L)=>{S.lifespan-=2;L.gain(10);L.key("梦中叩仙门",2);}}}},
+    {gap:[3,7],branch:{p:0.4,a:{txt:"醒后你把梦蛊放生。它飞入晨雾，像把一座虚假的仙宫还给天地。",f:(S,L)=>{L.gain(8);L.key("放生黄粱梦蛊",3);}},b:{txt:"梦蛊死在枕边，留下半句梦话：“人若没有梦，连醒也显得多余。”你把那半句记在心里。",f:(S,L)=>{L.gain(4);}}},end:true}
+  ]},
+  shenmudu:{t:"神木渡",steps:[
+    {gap:[2,4],txt:"神木横在两座山之间，树心中空，年年替山民渡过蛊潮。有人要砍它炼蛊，也有人说树里住着一位不肯离世的老人。",f:(S,L)=>{L.key("见神木横渡两山",1);}},
+    {gap:[2,5],branch:{p:0.5,a:{txt:"你进入树心，发现里面没有老人，只有一圈圈被刻下的名字。每个名字旁都写着：过河了，别回头。",f:(S,L)=>{L.gain(6);S.daoHeart=(S.daoHeart||0)+1;}},b:{txt:"你替山民守住神木，挡下了来砍树的蛊师。树皮裂开一道缝，流出的不是汁液，是一滴像眼泪的青光。",f:(S,L)=>{L.gain(8);L.key("守住神木渡",2);}}}},
+    {gap:[4,8],branch:{p:0.35,a:{txt:"神木终于倒下。倒下前它把最后一片叶子落在你掌心，叶脉里仍有一条渡人的路。",f:(S,L)=>{L.gain(13);L.key("神木落叶仍指归途",3);}},b:{txt:"你离开时，神木还站着。很多年后有人说它又长高了一寸，仿佛树也记得谁曾替它挡过一刀。",f:(S,L)=>{L.gain(5);}}},end:true}
+  ]},
+  canghai:{t:"沧海遗舟",steps:[
+    {gap:[3,6],txt:"荒海退潮时露出一艘倒扣的古舟，船腹刻着“来者莫问归期”。你在船底听见潮声之外的第二个心跳。",f:(S,L)=>{L.key("听见沧海遗舟的心跳",1);}},
+    {gap:[2,5],branch:{p:0.5,a:{txt:"你撬开船舱，里面没有宝物，只有一张写满名字的航海图。最后一个名字是空白，等一个愿意出海的人。",f:(S,L)=>{L.gain(8);L.key("沧海空名航海图",2);}},b:{txt:"你没有登船，只在船头留下自己的名字。潮水回涨时，船身轻轻一震，像有人在远处答应了。",f:(S,L)=>{S.lifespan+=1;L.gain(4);}}}},
+    {gap:[4,8],branch:{p:0.4,a:{txt:"多年后你终于扬帆。海上没有仙山，只有一场接一场的风暴；可每次风停，船都把你送回自己。",f:(S,L)=>{L.gain(14);L.key("乘沧海遗舟远行",3);}},b:{txt:"古舟再次沉入海底。你把那张空白名单烧成灰，灰落在掌心，像一小片迟到的雪。",f:(S,L)=>{L.gain(4);}}},end:true}
+  ]},
+  fengxue:{t:"雪中药人",steps:[
+    {gap:[2,4],txt:"大雪封山，你在山道旁发现一个昏迷的采药人，怀里护着一枚救命蛊丹。山那边还有人等药。",f:(S,L)=>{L.key("雪中遇见采药人",1);}},
+    {gap:[2,5],branch:{p:0.5,a:{txt:"你背起他往山上走。每一步都像踩在碎裂的骨头上，怀里的蛊丹却被你捂得温热。",f:(S,L)=>{S.lifespan-=2;L.gain(6);L.key("背采药人翻过雪岭",2);}},b:{txt:"你把火种和方向告诉他，自己留下守住山口。雪越下越大，你却第一次觉得一夜很短。",f:(S,L)=>{S.daoHeart=(S.daoHeart||0)+1;L.gain(4);}}}},
+    {gap:[3,7],branch:{p:0.4,a:{txt:"采药人活了下来，后来每年冬天都来你门前坐一会儿。他从不谢你，只把一包山药放在雪里。",f:(S,L)=>{L.gain(10);L.key("雪岭故人年年送药",3);}},b:{txt:"你没有等到山那边的回信。多年后有人说，雪线以上多了一座无名小屋，屋檐下挂着那枚已经用尽的蛊丹。",f:(S,L)=>{L.gain(4);}}},end:true}
+  ]},
+  qixing:{t:"七星棋局",steps:[
+    {gap:[2,4],txt:"夜雨中的破庙摆着一盘七星棋，黑白两子都没有主人。你落下一子，庙外便亮起一颗星。",f:(S,L)=>{L.key("落子七星棋局",1);}},
+    {gap:[2,5],branch:{p:0.5,a:{txt:"你按兵不动，任黑子先围。棋盘上的星光渐渐连成一条退路，原来棋局要教的不是胜，是活。",f:(S,L)=>{L.gain(7);L.key("七星棋局寻得退路",2);}},b:{txt:"你连落三子，杀气逼得庙门震动。最后一子落下，满盘俱灭，只剩你手边一枚白子还温着。",f:(S,L)=>{S.bonus*=1.04;L.gain(5);}}}},
+    {gap:[3,7],branch:{p:0.4,a:{txt:"第七颗星落下时，棋盘化作一面镜。镜中不是敌手，而是你许多年后仍会做的同一个选择。",f:(S,L)=>{L.gain(12);L.key("七星照见未落之子",3);}},b:{txt:"你把棋盘埋进泥里。雨停后，庙顶长出七朵小花，没人知道它们为何总在夜里开。",f:(S,L)=>{L.gain(4);}}},end:true}
+  ]},
+  yanguan:{t:"烟关旧客",steps:[
+    {gap:[2,4],txt:"烟关驿站住着一个从不摘斗笠的客人。他每天只点一盏灯，灯下摊着一封没有收信人的信。",f:(S,L)=>{L.key("烟关遇见无名旧客",1);}},
+    {gap:[2,5],branch:{p:0.5,a:{txt:"你替他送信。收信人已经死了三十年，坟头却还留着一块新墨写成的牌。",f:(S,L)=>{L.gain(6);S.daoHeart=(S.daoHeart||0)+1;}},b:{txt:"你没有问信里写什么，只陪他喝了一壶茶。临走时他把斗笠压低，说：有人知道你来过，就够了。",f:(S,L)=>{L.gain(4);L.key("与烟关旧客共饮",2);}}}},
+    {gap:[4,8],branch:{p:0.35,a:{txt:"旧客在春天离开，驿站老板说他走时把那封信放进了火里。火光里，纸上没有字，只有一条回家的路。",f:(S,L)=>{L.gain(10);L.key("烟关无字家书",3);}},b:{txt:"你后来再去，驿站已改成茶棚。新老板不认识旧客，却在柜底收着一盏他留下的灯。",f:(S,L)=>{L.gain(3);}}},end:true}
+  ]},
+  xinghe:{t:"星河问渡",steps:[
+    {gap:[3,5],txt:"渡劫前夜，星河落得很低。你在河岸看见一位摆渡人，他问：若仙门只许一人过，你带谁？",f:(S,L)=>{L.key("星河渡口的一问",1);}},
+    {gap:[2,5],branch:{p:0.5,a:{txt:"你答不出名字，只说带那个还没准备好的人。摆渡人笑了，星河便多出一叶小舟。",f:(S,L)=>{S.daoHeart=(S.daoHeart||0)+1;L.gain(7);L.key("星河渡口不留一人",2);}},b:{txt:"你说带自己。摆渡人点头，递来一根无形的桨：先过河的人，才有资格回头。",f:(S,L)=>{L.gain(8);}}}},
+    {gap:[4,8],branch:{p:0.4,a:{txt:"后来你在天外回望，发现那叶小舟并未消失。它载着许多迟到的人，沿着你的旧路慢慢而来。",f:(S,L)=>{L.gain(14);L.key("星河留下第二叶舟",3);}},b:{txt:"星河归于原位。摆渡人再没出现，但你每次抬头，都知道有人替你问过那一问。",f:(S,L)=>{L.gain(4);}}},end:true}
+  ]},
+  dujiebei:{t:"渡劫碑",steps:[
+    {gap:[3,6],txt:"荒原立着一块渡劫碑，碑上密密麻麻全是失败者的名字。最下面一行空着，像在等一个不肯服输的人。",f:(S,L)=>{L.key("看见渡劫碑空行",1);}},
+    {gap:[2,5],branch:{p:0.5,a:{txt:"你没有刻名，只把一枚蛊虫放在碑脚。它替所有无名者爬过石面，爬到一半便化作星尘。",f:(S,L)=>{S.daoHeart=(S.daoHeart||0)+1;L.gain(6);}},b:{txt:"你刻下自己的名字，又在旁边刻了一个问号。石屑落地时，你忽然觉得失败也有姓名。",f:(S,L)=>{L.gain(7);L.key("在渡劫碑上刻下问号",2);}}}},
+    {gap:[4,8],branch:{p:0.4,a:{txt:"多年后你回来，碑上自己的名字被风磨去一半。你没有补刻，只在背面写：走过，便算。",f:(S,L)=>{L.gain(11);L.key("渡劫碑背面的来过",3);}},b:{txt:"渡劫碑碎于一场无名雷雨。碎石散落荒原，后来每一块都被路过的人当作垫脚石。",f:(S,L)=>{L.gain(4);}}},end:true}
+  ]}
+});
+
+/* 第三幕加深：每条故事在原有相遇、转折、回响之外，再经历一次中段抉择与一次收束抉择。
+   这些选择不直接改写总人生结局，却会留下各自的故事结局，供往事录收集。 */
+const STORY_DEPTH = {
+  huajiu:{q:"花酒坊的名声传出巷外，最后一坛酒该交给谁？",a:"把酿酒方子留给巷中孩子",b:"带着最后一坛酒去远方",q2:"离巷前，伙计问你还会不会回来。",c:"留下，把一条巷子酿成故乡",d:"上路，让酒香替你认路",at:"你把方子抄在旧账本背面，教会几个连酒糟都舍不得吃完的孩子。后来他们酿出的第一坛酒，甜得像有人终于回家。",bt:"你把酒坛封好，走过三座城。坛中酒没有卖出天价，却在每个陌生夜里替你保留了一点旧巷的温度。",ct:"你留下来，花酒坊换过招牌，却始终在门槛下给无名客留一盏灯。",dt:"你没有回头。许多年后有人在远城开坛，酒香里仍有那条巷子的一声犬吠。"},
+  hantan:{q:"寒潭少女把一枚冰魄放在岸边，像把一段未说完的话交给你。",a:"走进寒潭，替她承受寒意",b:"留在岸上，只以剑意相伴",q2:"冰面将裂时，她第一次问你：你到底想从我这里得到什么？",c:"说想要一个并肩的明天",d:"说什么也不要，转身离开",at:"你踏入潭心，寒意穿骨，却看见她眼里的霜第一次化开一线。你们没有结契，只约定下次仍在这里见。",bt:"你在岸上守了整夜，剑意替她挡住最冷的一阵风。隔水相望也算同行，只是同行各自有路。",ct:"你说出口的不是誓言，是明天。她把冰魄分你一半，从此每逢冬月，寒潭便有两道脚印。",dt:"你把答案留在风里。她没有追，只在你身后敲碎冰面，像替这段缘分留一声清响。"},
+  renzu:{q:"说书先生问你：若天只肯借你一百年，你拿什么作抵？",a:"以功名与修为作抵",b:"以一生不违本心作抵",q2:"散场时，先生把惊堂木递给你，叫你替他讲完最后一段。",c:"讲人祖如何向天讨价",d:"合上惊堂木，讲一个自己的故事",at:"你列出修行、功名、众生三笔账，发现每一笔都写着借字。先生笑着说，肯算账的人已经比人祖多走一步。",bt:"你没有讨价，只说人活一世，能把该守的守住便算偿还。茶棚里无人喝彩，却有人悄悄把这句话记下。",ct:"你讲到人祖回头那一刻，才知借来的寿也能换成照亮别人的灯。惊堂木落下，满棚安静得像一场雪。",dt:"你讲完自己的失败与迟疑。先生把木头收回袖中，说：故事不必伟大，肯留下名字就够了。"},
+  honglian:{q:"红莲业火在荒原分出两朵，一朵烧传承，一朵烧来路。",a:"取走传承之火",b:"护住无人问津的来路之火",q2:"火海将熄，红莲残影问你：想留下什么颜色？",c:"留下能让后来者变强的红",d:"留下提醒世人别重蹈的黑",at:"你取走传承，火焰在窍中化作一页无字经。经上没有招式，只有一行：力量若无归处，便只是更快的坠落。",bt:"你护住那朵小火，看它替荒原照亮一条回营的路。无人记你的名字，幸存者记得那一夜没有迷路。",ct:"你把红莲火种交给一个资质平平的孩子。多年后，孩子没有成尊，却用那点火守住了一座城。",dt:"你让黑火归于灰烬。它没有带来力量，只在每个贪心者靠近时，照出一张疲惫的脸。"},
+  jiangshi:{q:"义庄深处传来老友的声音，他说自己已经不怕死，只怕没人记得活过。",a:"进去陪他坐一夜",b:"把灯放在门口，隔门相守",q2:"天亮前，他要你替他做最后一件事。",c:"替他把名字刻回族谱",d:"替他把墓门永远关上",at:"你坐在棺木旁听他讲完年轻时的荒唐。天亮后他没再说话，手里却多了一盏从未点燃的灯。",bt:"你没有进门，只把灯放在门槛。黑暗里他笑了一声：有人在外面，我就还算活着。",ct:"你把他的名字刻得很深，族谱上第一次承认一个僵尸也曾是族人。",dt:"你合上墓门，门内门外都安静下来。那盏灯在门缝下亮了三天，像一声终于说完的晚安。"},
+  wangyue:{q:"传承蛊只认一人，败者却把自己的笔记推到你面前。",a:"接过笔记，承认彼此可以共修",b:"拒绝笔记，只求堂堂正正一战",q2:"传承落入掌心后，你发现其中缺了一页。",c:"把缺页还给败者",d:"独自补完缺页",at:"你们把两份笔记合在一起，发现真正的传承不是蛊，而是一套允许后来者改错的路。",bt:"你把笔记推回去，输了也不借别人的答案。败者没有嘲笑，只在你离开时说下次别输。",ct:"你找到缺页，发现上面写着败者的名字。你把它交还，他从此成了第一个替你守传承的人。",dt:"你独自补完那一页，字迹终于像自己。可每次翻到那里，你仍会想起那双不肯服输的眼睛。"},
+  kongqiao:{q:"第二空窍的雏形开始索要真元，你只能先喂饱一边。",a:"喂养新窍，赌一条未知道路",b:"稳住本窍，保住眼前修为",q2:"虚影将凝未凝，窍中传来另一个自己的叹息。",c:"接纳另一个自己",d:"斩断虚影，专走一条路",at:"你把元石一枚枚投入虚影，疼得像在割自己的肉。第二空窍没有立刻成形，却学会替你藏住一缕不肯熄灭的真元。",bt:"你封住新窍，修为稳稳上升。偶尔夜深时，窍壁会轻响一下，像另一条路在门外敲门。",ct:"你承认虚影也是你，于是两窍一同吐纳。它没有让你变强多少，却让你终于不再与自己争夺一口气。",dt:"你斩断虚影，空窍恢复安静。后来你走得更远，却总在某个转弯处想起那条没有走完的路。"},
+  gushi:{q:"病蛊蜕壳后，老蛊商拿出一张旧契，说这只蛊本来不该属于你。",a:"按契约把蛊交还",b:"留下蛊，替它寻一个活路",q2:"老蛊商倒下前，把铺子的钥匙丢到你脚边。",c:"接过钥匙，替他守住铺子",d:"把钥匙埋回门槛下",at:"你把幼蛊放回旧匣，老蛊商没有道谢，只把最好的秤砣留给你。后来你做买卖，第一件学会的是不把人情称轻。",bt:"你没有交蛊，而是把它带去山林。它最后长成一只无人登记的异蛊，像一笔没有入账却真实存在的横财。",ct:"你守住小铺三年，等老蛊商的孙子回来。孩子接过钥匙时，门槛下那道旧血迹已经被磨平。",dt:"你埋下钥匙，没有接手别人的旧账。多年后那里长出一株草，叶片像两枚相扣的元石。"},
+  bianhuang:{q:"蛊潮前夜，军册上只够写下一条命，你身后却站着受伤的同袍。",a:"把自己的名额让给他",b:"留下名额，带他一起闯潮",q2:"潮声退去，老卒把军功牌塞回你手里。",c:"把军功分给阵亡者家人",d:"把军功留给自己换修行资源",at:"你把名额让出，独自守在粮道。蛊潮最深处有人替你挡下一击，你才知道让出去的路也会绕回来。",bt:"你们并肩入潮，靠一碗冷粥撑过三夜。活着回来的不止是两个人，还有一份不肯被号角吹散的情义。",ct:"你把牌拆成许多小片，送到每户门前。没人记住你的军功，却有人在来年春天给你送来第一坛新酒。",dt:"你收下军功，换来更高的修为。只是后来每逢风起，你总听见军册上那些没写下的名字。"},
+  shoumu:{q:"无名老蛊师的蛊卵终于有了裂纹，墓里却传来另一个人的哭声。",a:"先照看即将破壳的蛊卵",b:"先去寻找哭声的主人",q2:"蛊卵破壳后，第一眼认出的却不是你。",c:"放它随旧主离去",d:"把它留在墓前继续守候",at:"你替蛊卵挡住雨水，破壳后的小虫绕墓三匝便飞走。你第一次明白，守候不总以留下作为回报。",bt:"你在后山找到一个迷路的孩子，把他送回村。回来时蛊卵还在，像有人替你把这一夜守完。",ct:"你放走蛊虫，墓碑缝里多了一道微光。它没有认你，却记住了你替它等过的年月。",dt:"你将蛊卵留在墓前，任它慢慢长成守墓蛊。后来每个来祭拜的人，都有一只虫替他们看见来路。"},
+  shuangsheng:{q:"双生蛊终于不再争斗，却同时向你提出不同的愿望。",a:"让它们各自寻找主人",b:"让它们继续共居一窍",q2:"两只蛊将要合炼，必须舍弃其中一段记忆。",c:"舍弃争斗的记忆",d:"舍弃相依的记忆",at:"你放它们飞走，一只投向远山，一只落入旧友掌心。空窍忽然安静，安静里却有两道回声。",bt:"你让两蛊并肩吐纳，修为没有暴涨，日子却稳了下来。它们像两个人学会不必时时证明谁更重要。",ct:"你舍去争斗，异蛊成形时只记得彼此相救的瞬间。它的第一声鸣叫，像两个孩子终于和好。",dt:"你舍去相依，异蛊锋利无比。它替你赢下许多战斗，却再也没有在你掌心停留。"},
+  jingzhong:{q:"镜中人把一枚碎片递出镜面，说它能照见你最想成为的样子。",a:"接过碎片，直视未来的自己",b:"推回碎片，只看现在的自己",q2:"铜镜即将碎尽，镜中人问你要不要替他留一个名字。",c:"替他留下你的姓",d:"让他无名无姓地离开",at:"你接过碎片，里面的自己并不强大，只是少了一点逃避。镜中人点头，说这比仙相更像答案。",bt:"你推回碎片，镜中人第一次露出轻松的神情：肯看现在的人，才有资格改未来。",ct:"你把自己的姓写在镜背，镜中人便不再像你，而像一个终于被家接纳的陌生人。",dt:"你让他无名地走。镜碎之后，碎片里仍映出你，却不再逼你成为另一个人。"},
+  chanming:{q:"那枚蝉蜕在梦里问你要不要记住上一世。",a:"记住，哪怕记忆会带来疼痛",b:"忘掉，让这一世干净地开始",q2:"蝉鸣将停，梦中人要你替轮回写一句注脚。",c:"写‘我还会回来’",d:"写‘此生已经足够’",at:"你把蝉蜕贴在眉心，旧日的痛像雨一样落下。你没有因此变得聪明，只是不再把同一种错误当成命。",bt:"你把蝉蜕埋进土里。醒来时没有前世，却有一种难得的轻松，像终于允许自己只活这一回。",ct:"你写下会回来，字迹被蝉声吹散。后来每一世你都忘记这句话，却总在关键时刻朝同一条路走。",dt:"你写此生足够，蝉鸣停得很温柔。轮回仍会继续，只是这次不再逼你证明什么。"},
+  mojian:{q:"魔剑承认你为主，却要你在剑身刻下第一笔。",a:"刻下自己的名字",b:"刻下一句不属于自己的誓言",q2:"老魔的残魂将散，问你愿不愿听完他没说完的故事。",c:"听完，再决定是否继承",d:"不听，立刻封剑",at:"你刻下名字，剑身立刻反噬。疼痛过去后，剑终于承认它握在一个会犹豫的人手里。",bt:"你刻下誓言，剑意变得安静。它不记你的名字，只记得你曾在杀意最盛时停手。",ct:"老魔讲完一生，最后一句不是传承，而是后悔。你接过剑，却把他的后悔也一并带在身上。",dt:"你封住魔剑，残魂无声散去。它没有成为你的力量，却成为你往后每一次拔剑前的那一息克制。"},
+  dongfu:{q:"古仙洞府的两道门同时开启，一道通向传承，一道通向被遗忘的凡人遗物。",a:"进入传承门",b:"进入遗物门",q2:"洞府坍塌前，玉简只够带走一件东西。",c:"带走完整功法",d:"带走一封无人收的信",at:"你踏入传承门，所得功法缺了最后一页。缺页上只有一句：真正的传承要由后来者补完。",bt:"你在遗物门里找到一只旧木盒，里面的凡人没有留下功法，只留下三顿饭的账。你忽然觉得这也算仙缘。",ct:"你带走功法，修为从此快了一截，却再没忘记那扇没进去的门。",dt:"你带走信，信里只写着‘别等我了’。它没有让你变强，却让你在后来不再轻易许诺。"},
+  suDi:{q:"宿敌重伤倒在你脚边，身上的剑正是你一直想赢过的那一柄。",a:"救他，再约来日一战",b:"取剑，结束这场旧怨",q2:"多年后最后一战前，他问你们是否真的必须分出胜负。",c:"承认彼此成就了对方",d:"坚持让胜负替一切说话",at:"你替他止血，他醒来后只说一句：下次我不会谢你。你们的下一战因此更像约定，而不是仇。",bt:"你取走剑，却发现剑鞘里刻着你的名字。宿敌早已把你当作唯一的对手，也当作唯一的见证。",ct:"你们并肩坐在擂台边，承认彼此的锋芒互相磨亮。最后一战没有输赢，只有两个人同时收剑。",dt:"你坚持分胜负，终于赢下那一剑。天下都说你痛快，只有你知道，赢后最先消失的是那条路。"},
+  wenYi:{q:"瘟疫退到村口，药方却只够救一半的人。",a:"按病势救最有机会活的人",b:"把药分给每一户，哪怕效果变弱",q2:"村民要为你立长生牌位，你想让牌位写什么？",c:"写药方，不写你的名字",d:"写你的名字，让他们记得有人来过",at:"你按病势分药，救下的人后来替你照料了许多孤儿。你知道这不是最公平的选择，却是能留下最多活人的选择。",bt:"药被分得极薄，仍有人没能熬过夜。活下来的人却学会了互相照看，村子从此没有再等一个救世主。",ct:"牌位上只写药方。后来每个抄方的人都以为那是古方，不知道它最初写在一块沾血的木板上。",dt:"你留下自己的名字。香火确实长久，却也让你明白，被记住和被理解从来不是一回事。"},
+  qingshan:{q:"旧印指向山后两条路，一条回祖居，一条通向从未有人记得的迁徙地。",a:"回祖居问清旧事",b:"去迁徙地寻找新答案",q2:"补印时你发现缺的那半枚印就在自己掌心。",c:"把它嵌回石亭",d:"带着它继续上路",at:"你回到祖居，老人们只记得一场迁徙，却不记得为何出发。你替他们把遗忘也写进族谱。",bt:"你走到迁徙地，那里只剩一口枯井。井底的回声告诉你，来路有时不在故乡，而在愿意继续走的人身上。",ct:"石亭合印，山风像替祖辈盖下最后一章。你终于知道回头不是停下，是把来路带进下一步。",dt:"你不再补印。半枚旧印陪你翻过许多山，后来成为后人认出你来自哪里的唯一证据。"},
+  bailu:{q:"白鹿把地图叼到你脚边，另一端画着一处会吞人的雪谷。",a:"跟它进雪谷",b:"把地图交给摆渡人，自己留在渡口",q2:"白鹿要过最后一条河，却只剩一只船。",c:"把船让给白鹿",d:"与它同船冒险",at:"你跟着白鹿进谷，找到的不是宝藏，而是一群迷路的孩子。地图把你带到的，是该被带回去的人。",bt:"你把地图交出，摆渡人替许多人改了航线。白鹿走远时回头一次，像知道你把一条路交给了更多人。",ct:"你把船推给白鹿，自己踏水过河。多年后旧渡仍有人说，最先学会渡人的不是摆渡人，是一头鹿。",dt:"你与白鹿挤在一条小船上，船身几乎沉没。靠岸时它没有道谢，只把额头轻轻碰了碰你的肩。"},
+  yuehe:{q:"月河里漂来三盏灯，分别写着‘未说’‘未归’‘未忘’。",a:"捞起‘未说’",b:"捞起‘未归’",q2:"守灯人要你亲手熄掉一盏灯，才准你离开。",c:"熄掉属于过去的灯",d:"让三盏灯继续漂",at:"你捞起未说的灯，里面没有声音，只有一段不再需要说出口的理解。它照着你走过最黑的一段河。",bt:"你捞起未归的灯，灯芯里藏着一枚旧门钥。你没有找到那扇门，却从此知道有人曾努力回家。",ct:"你熄掉旧灯，河面反而亮了一瞬。守灯人说，结束不是抹去，是让后来者看得见前方。",dt:"你让三盏灯继续漂。它们最后汇入大河，带走的不只是往事，还有你不肯替别人作答的自由。"},
+  wuyin:{q:"石碑要你留下一个秘密，谷底才会为你开门。",a:"留下关于自己的秘密",b:"留下一个别人托付的秘密",q2:"出谷时，石碑要求你带走一句谎话。",c:"带走一则善意的谎",d:"拒绝带走任何谎话",at:"你说出自己的秘密，谷中没有掌声，只有一阵久违的回声。那声音像你终于叫出了自己的名字。",bt:"你守住别人托付的话，只把自己的沉默留在谷中。多年后有人路过，听见谷里替你保管着它。",ct:"你带走善意的谎，让一个将死之人多睡了三晚安稳觉。你知道它不是事实，却也是一种慈悲。",dt:"你拒绝谎话，石碑没有惩罚你，只在背面添了一行：诚实有时只是另一种选择。"},
+  huangliang:{q:"梦中老人给你三扇门：仙门、归门、无门。",a:"推开仙门",b:"推开归门",q2:"醒来前，梦中的自己问你要不要把梦带出去。",c:"带走梦里的荣光",d:"只带走梦里的教训",at:"仙门后没有掌声，只有一条更长的山路。你终于明白，梦没有骗人，是你曾把愿望听成了终点。",bt:"归门后是那间最旧的酒铺。你醒来时枕边一片湿痕，却比成仙的梦更像活着。",ct:"你带走梦里的荣光，往后每次受挫都想起那座虚假的仙宫，既被它鼓舞，也被它提醒。",dt:"你只带走教训。梦蛊在窗外碎成晨雾，像一个愿意放下掌声的人终于学会醒来。"},
+  shenmudu:{q:"神木树心里有两道年轮，一道记着过河的人，一道记着没能过河的人。",a:"替活人砍出新的渡口",b:"守住旧树，不让它再受伤",q2:"神木将倒，树心老人问你要把最后一块木头给谁。",c:"给山民造桥",d:"给自己炼蛊",at:"你砍下枝桠造出小渡口，树的伤口却长成了新的桥。有人说你毁了神木，也有人说你让它继续渡人。",bt:"你守住神木，蛊潮绕开山谷。树没有感谢，只在年轮里留下一个与你相似的缺口。",ct:"最后一块木头成了七座小桥的第一块。老人们走过去时，仍会回头向那棵倒下的树行礼。",dt:"你用木心炼蛊，力量确实增了。可每次催动本命蛊，都听见一声很轻的树响。"},
+  canghai:{q:"遗舟的航海图标出两处终点：一处写着仙山，一处写着故乡。",a:"驶向仙山",b:"驶向故乡",q2:"风暴中船帆断裂，只够保住一个方向。",c:"保住船，继续远行",d:"烧掉船，顺潮回岸",at:"你驶向仙山，尽头却没有仙人，只有一片让人重新学会划船的海。你带回的不是宝物，是不再等待奇迹的手。",bt:"你驶向故乡，海浪把旧岸推得很远。靠岸时你才懂，故乡不是原地，是有人仍愿意为你点灯。",ct:"你保住船，风暴过后它伤痕累累，却载着几个陌生人一起回到晴天。",dt:"你烧掉船，木灰在海面铺成一条短暂的路。你走回岸上，知道有些远行必须亲手结束。"},
+  fengxue:{q:"采药人醒来后说，蛊丹只能救山那边一个人，你不知道那人是谁。",a:"背着他翻过雪岭",b:"把蛊丹交他，让他独自上路",q2:"雪停后，山口只剩一串脚印和一封没有署名的信。",c:"追着脚印去看结果",d:"留在原地，相信他会到达",at:"你背着他翻过雪岭，自己的血染红了雪。山那边有人得救，却没人知道你也曾差点留在那里。",bt:"你把蛊丹交回他手里，自己守在山口。天亮时他回头一次，彼此都明白这份信任比同行更重。",ct:"你追到山那边，看到一间亮灯的小屋。采药人没有谢你，只把一碗热汤推到你面前。",dt:"你没有追。多年后每个冬天都有药包放在你门前，里面的字迹越来越老，却从不写名字。"},
+  qixing:{q:"棋盘上黑白各有一条活路，却要牺牲一枚你最珍惜的子。",a:"牺牲自己的白子",b:"牺牲对手留下的黑子",q2:"第七颗星落下，棋局问你胜负之外还要什么。",c:"要一个能重来的机会",d:"要记住这盘棋",at:"你牺牲白子，棋盘给出一条险路。后来你活着走出破庙，却不再把损失称作失败。",bt:"你吃掉黑子，满盘立刻安静。你赢得很快，却在多年后仍想知道对手有没有别的走法。",ct:"你要重来，星光却只回放一遍。棋局教你，真正的重来不是回到原点，是带着记忆再落一子。",dt:"你选择记住。棋盘化作七朵夜花，每一朵都开在你差点忘记的地方。"},
+  yanguan:{q:"无名旧客把信交给你，说送到或烧掉都算一种答复。",a:"替他把信送到墓前",b:"替他在驿站烧掉这封信",q2:"旧客摘下斗笠，露出一张你似曾相识的脸。",c:"问他究竟从哪里来",d:"不问，只再陪他喝一壶",at:"你把信送到墓前，墓碑上的新墨忽然湿了。没有人出现，却有一只灯蛊在风里替你点亮。",bt:"你烧掉信，火里没有字，只有一条回家的路。旧客看着火光，像终于获得了被允许的告别。",ct:"你问起他的来处，他说每个人都是从一封迟到的信里走出来的。说完，他把斗笠扣回去。",dt:"你不问。第二壶茶喝完，旧客把最后一块点心推给你，驿站从此少了一个客人，多了一盏灯。"},
+  xinghe:{q:"摆渡人让你在船上留一个位置，却不许你知道会来谁。",a:"把位置留给陌生人",b:"把位置留给未来的自己",q2:"仙门在对岸开启，船却只能再载一人。",c:"先把别人送过去",d:"自己先过，再回来接人",at:"你留出空位，船上最终坐进一个不知姓名的孩子。她一路问星星，你一路回答，像把未来送过了河。",bt:"你为未来的自己留位，船到半途却坐进一位白发老人。你认出那是多年后的自己，终于明白预留不是占有。",ct:"你把别人送过仙门，自己留在此岸。后来星河每夜低垂，像有人替你把一条路照亮。",dt:"你先过河，再回头接人。船已经不在原处，但你学会了在没有船时也能渡人的方法。"},
+  dujiebei:{q:"渡劫碑的空行只够刻下一句话，风雷正在催你落笔。",a:"刻下自己的姓名",b:"刻下所有无名者的姓名",q2:"雷雨将毁掉石碑，你要带走哪一块碎石？",c:"带走刻着你名字的那块",d:"带走没有字的那块",at:"你刻下姓名，碑没有回应。多年后名字被风削去一半，剩下的一半却足够证明你曾经来过。",bt:"你刻下无名者的名字，石面密密麻麻像一片星空。没有谁因此得道，却有人第一次知道失败者也值得记住。",ct:"你带走自己的碎石，放在修行案头。每次想急着渡劫，石头都提醒你先问是否走稳。",dt:"你带走无字碎石，把它垫在山路最低处。后来许多人踩着它过去，没人知道那是渡劫碑最后的骨头。"}
+};
+function applyStoryDepth(){
+  Object.keys(STORY_DEPTH).forEach(id=>{
+    const ch=CHAINS[id], d=STORY_DEPTH[id];
+    if(!ch||!d||ch._depthApplied) return;
+    const last=ch.steps[ch.steps.length-1];
+    if(last) last.end=false;
+    const gain=d.g||[6,3,10,4];
+    ch.steps.push({gap:[2,4],branch:{player:true,q:d.q,a:{t:d.a,pk:"F",txt:d.at,f:(S,L)=>{L.gain(gain[0]);}},b:{t:d.b,pk:"T",txt:d.bt,f:(S,L)=>{L.gain(gain[1]);S.lifespan+=1;}}}});
+    ch.steps.push({gap:[3,6],branch:{player:true,q:d.q2,a:{t:d.c,pk:"E",txt:d.ct,f:(S,L)=>{L.gain(gain[2]);S.daoHeart=(S.daoHeart||0)+1;}},b:{t:d.d,pk:"J",txt:d.dt,f:(S,L)=>{L.gain(gain[3]);}},},end:true,outcome:true});
+    ch._depthApplied=true;
+  });
+}
+applyStoryDepth();
+
+/* 往事录：三十条故事并非一条主线，而是同一片天地留下的三十道回声 */
+  const STORY_WORLD_INTRO = "正史只记得谁登仙、谁成魔，没人记得灵溪边那半块玉、边荒营火旁的一碗粥，以及每年秋天总会落下的蝉蜕。三十段往事各自成章，每段五章、四次分支、两种收束，却在同一片人间彼此照面：同一条水脉、同一位无名老者、同一场迟到的风，替后来的人把前人的故事轻轻接上。";
+const STORY_META = {
+  lingxi:{title:"灵溪旧约", theme:"一碗热饭与一封迟到的信", links:["bianhuang","chanming"], hint:"灵溪的水会把消息送去边荒，也会把旧日的影子带回来。", echo:"你后来才知道，那半块玉并非信物，而是灵溪旧渡口的凭证。持它的人，曾替许多陌生人把一句“还你”送到很远的地方。"},
+  kongqiao:{title:"空窍生窍", theme:"身体里未曾走完的另一条路", links:["dongfu","shuangsheng"], hint:"第二空窍的传闻，最早刻在古仙洞府的残壁上。", echo:"那道浅痕并没有消失。很多年后，古仙洞府的残壁上少了一笔，像有人把“另一个自己”从石头里取走，留给了下一世。"},
+  gushi:{title:"蛊市风波", theme:"一袋元石和一碗热饭的回声", links:["bianhuang","shoumu"], hint:"蛊市里的每一笔买卖，都可能在别人的墓前结账。", echo:"那只血脉幼蛊后来被带去了边荒；而老蛊商留下的账本，最后落在一位守墓人手里，账页上只写着：人情不入秤。"},
+  bianhuang:{title:"边荒征召", theme:"烽火里没有被写下的名字", links:["lingxi","wenYi"], hint:"边荒的号角吹过灵溪，也吹进山下村落的药炉。", echo:"你救下的那支队伍里，有人曾在灵溪收过一封信。多年后，他把边荒的药方带回山下，救活了另一场瘟疫。"},
+  shoumu:{title:"守墓人", theme:"替陌生人把一句话守到天明", links:["gushi","chanming"], hint:"墓碑没有名字，蝉蜕却记得每一次守候。", echo:"老蛊师的墓碑后来长出一道细缝，缝里卡着半页蛊市账纸。没有人知道是谁放的，只有秋蝉每年在碑前停一停。"},
+  shuangsheng:{title:"双生蛊", theme:"分开才懂得什么叫一体", links:["kongqiao","jingzhong"], hint:"两只蛊争的是一口真元，镜中人问的却是同一个你。", echo:"双蛊相融后留下的淡青光，曾照亮那面铜镜。镜中人看见它时，只说了一句：原来另一个我，也在找回家的路。"},
+  jingzhong:{title:"镜中人", theme:"不与自己争胜的那一天", links:["shuangsheng","chanming"], hint:"铜镜里的人没有名字，蝉蜕里的人也没有脸。", echo:"镜碎之后，最大的碎片被埋在灵溪上游。每逢秋水涨满，镜面便映出一只飞走的蝉，像有人替你把旧梦放过。"},
+  chanming:{title:"蝉蜕", theme:"轮回不是重来，是续写", links:["lingxi","jingzhong"], hint:"每一世都有人捡到蝉蜕，却很少有人认出那是自己的旧壳。", echo:"你曾以为蝉蜕只属于自己。后来才知，灵溪、铜镜、边荒和墓碑都在替同一只蝉记年，而它从不替任何人回答值得与否。"},
+  mojian:{title:"魔剑遗鸣", theme:"杀意之外，剑也会记得人", links:["dongfu","suDi"], hint:"魔剑的残鸣从古仙洞府来，又在宿敌的名字里回响。", echo:"断剑入土后，剑柄上的残纹被人拓在古仙洞府门前。后来每一位来访者都以为那是警告，只有你知道，那是道别。"},
+  dongfu:{title:"古仙洞府", theme:"来迟了的人仍能带走一盏灯", links:["mojian","kongqiao"], hint:"洞府石门上的残字，缺的不是一笔，而是一个来得及的人。", echo:"你在石壁上看见的半个仙字，与魔剑剑柄上的残纹正好相合。它没有打开第二道门，只让你知道：有些传承，先传的是遗憾。"},
+  suDi:{title:"宿敌", theme:"名字刻得越深，越难带走", links:["mojian","bianhuang"], hint:"宿敌死后，边荒仍会有人提起那场没有观众的决斗。", echo:"你以为宿敌只属于你们两人。后来边荒老卒说，那柄断剑曾在他少年时救过一条命——江湖的恩怨，从来不肯只认一个主人。"},
+  wenYi:{title:"瘟疫围村", theme:"救下一个村庄，也救不完一生", links:["bianhuang","shoumu"], hint:"药方会离开山村，哭声却总在某块墓碑前停留。", echo:"你留下的药方后来被抄进边荒军册，又被一位守墓人拿去给无名坟前的孩子。药能治病，不能替人把失去的那一部分活回来。"}
+};
+Object.assign(STORY_META, {
+  huajiu:{title:"花酒巷",theme:"一坛酒与一条离巷的路",links:["gushi","yuehe"],hint:"酒香会留在衣袖里，也会留在那些没有说出口的告别里。",echo:"花酒巷后来换过三任东家，只有门槛下那道酒渍一直没干，像有人还在等一位提坛归来的客。"},
+  hantan:{title:"寒潭少女",theme:"隔水相望的两条道",links:["fengxue","qingshan"],hint:"寒潭的水从不留人，却替许多修行者量过自己的心。",echo:"你再路过寒潭时，潭边已坐着另一个少年。你没有开口，只把当年那块石头往旁边让了让。"},
+  renzu:{title:"人祖传说",theme:"借来的寿与要还的天",links:["huangliang","xinghe"],hint:"说书人讲的是古人，听故事的人却总会在某一句里听见自己。",echo:"茶棚倒塌后，惊堂木被人捡去劈柴。每一声裂响，都像替某个借过天命的人把账翻了一页。"},
+  honglian:{title:"红莲遗蜕",theme:"把短命烧成一场长久的火",links:["canghai","dujiebei"],hint:"有些尊者留下传承，有些尊者只留下不肯熄灭的颜色。",echo:"红莲之后，荒原上每隔百年便开一朵不合时令的花。没人敢说那是遗蜕，也没人舍得踩过。"},
+  jiangshi:{title:"僵尸夜话",theme:"不生不死也有一盏灯",links:["yanguan","shoumu"],hint:"义庄的门只在夜里开，里面的人不一定想活，外面的人却总想问一句为什么。",echo:"那位故友最后留下的不是尸身，而是一枚没有主人的灯蛊。它后来照过许多不肯回家的人。"},
+  wangyue:{title:"望月传承",theme:"名额只有一个，路却不止一条",links:["qingshan","qixing"],hint:"家族的传承写在族谱上，真正的传承往往写在一个后辈看你的眼神里。",echo:"那枚传承蛊后来被拆成两半，一半留在族中，一半随败者远行。月亮照着两条路，谁也没说哪条更高。"},
+  qingshan:{title:"青山旧印",theme:"家可以换，来路不能忘",links:["wangyue","dongfu"],hint:"半枚家族印不指向祖坟，只指向一个人愿意回头的地方。",echo:"青山石亭后来只剩一根柱子。风穿过柱孔时，仍像一枚旧印在纸上缓慢盖下。"},
+  bailu:{title:"白鹿渡",theme:"一张地图与一条归路",links:["lingxi","shoumu"],hint:"摆渡人不问你从哪里来，只看你是否还记得要渡谁。",echo:"白鹿年年经过旧渡，蹄印从不落在同一块石头上；可它每次回头看的方向，都是你离开的方向。"},
+  yuehe:{title:"月河灯",theme:"灯灭以前已经照过",links:["huajiu","chanming"],hint:"河底埋着许多没有说完的话，灯只负责把它们送到水面。",echo:"月河后来改了河道，守灯人却仍在旧岸点灯。灯影照不见故人，只照见你曾经伸手的姿势。"},
+  wuyin:{title:"无音谷",theme:"一句真话抵得过一生沉默",links:["jingzhong","mojian"],hint:"谷中没有回声，只有你带进去的那句不肯承认的话。",echo:"无音谷第一次有了声音，是一个路人读到石碑背面时笑了一声。那笑并不轻松，却终于是真的。"},
+  huangliang:{title:"黄粱梦蛊",theme:"梦醒之后仍要认得自己",links:["kongqiao","renzu"],hint:"梦里仙门万丈，醒来只剩枕边一只蛊。",echo:"黄粱蛊死后留下的粉末会在雨天发亮。有人把它当星砂，有人把它当提醒：掌声不是天命。"},
+  shenmudu:{title:"神木渡",theme:"一棵树替许多人过河",links:["bianhuang","huajiu"],hint:"神木的年轮里藏着渡过蛊潮的名字，也藏着没有回来的人。",echo:"神木倒下后，山民把它做成七座小桥。桥桥不长，却刚好够一个人把另一个人背过去。"},
+  canghai:{title:"沧海遗舟",theme:"没有归期也可以出海",links:["honglian","dongfu"],hint:"古舟不承诺仙山，只承诺风停时把你送回自己。",echo:"海退三寸，船便露出三寸旧木。有人说那是沉船，有人说那是还没有写完的远行。"},
+  fengxue:{title:"雪中药人",theme:"救人之后不一定等得到道谢",links:["hantan","shoumu"],hint:"雪线之上有一枚用尽的蛊丹，雪线之下有一双每年都来坐一会儿的脚。",echo:"后来采药人每年冬天都来你坟前坐一会儿。没人问他要等谁，雪知道，山也知道。"},
+  qixing:{title:"七星棋局",theme:"棋局教人活，不只教人胜",links:["suDi","wangyue"],hint:"七颗星照亮的不是棋盘，而是你还没落下的那一步。",echo:"破庙后来塌了，七朵夜花却年年盛开。路人以为那是祥瑞，你知道那是某局未完的棋。"},
+  yanguan:{title:"烟关旧客",theme:"有人知道你来过就够了",links:["gushi","jiangshi"],hint:"没有收信人的信也会有去处，只是去处不一定是一座城。",echo:"烟关的灯被后人改成了路标。每个赶夜路的人都以为它在指向前方，只有旧客知道它曾指向回家。"},
+  xinghe:{title:"星河问渡",theme:"先过河的人是否有资格回头",links:["renzu","honglian"],hint:"摆渡人只问一件事：若仙门只许一人过，你带谁。",echo:"星河每逢渡劫夜便低下来一点。有人看见一叶小舟，有人只看见自己的手还没有松开。"},
+  dujiebei:{title:"渡劫碑",theme:"走过便算，不必留下姓名",links:["mojian","chanming"],hint:"碑上全是失败者的名字，最深的一道刻痕却没有名字。",echo:"渡劫碑碎后，石块成了路上的垫脚石。后来人踩着失败者走远，却很少低头说声谢谢。"}
+});
+const STORY_EVENT_IDS={"灵溪旧约":"lingxi","空窍生窍":"kongqiao","蛊市风波":"gushi","边荒征召":"bianhuang","守墓人":"shoumu","双生蛊":"shuangsheng","镜中人":"jingzhong","蝉蜕":"chanming","魔剑遗鸣":"mojian","古仙洞府":"dongfu","宿敌结怨":"suDi","瘟疫围村":"wenYi","花酒巷":"huajiu","寒潭少女":"hantan","人祖传说":"renzu","红莲遗蜕":"honglian","僵尸夜话":"jiangshi","望月传承":"wangyue","青山旧印":"qingshan","白鹿渡":"bailu","月河灯":"yuehe","无音谷":"wuyin","黄粱梦蛊":"huangliang","神木渡":"shenmudu","沧海遗舟":"canghai","雪中药人":"fengxue","七星棋局":"qixing","烟关旧客":"yanguan","星河问渡":"xinghe","渡劫碑":"dujiebei"};
+function storyRecord(id){ return meta.story&&meta.story.chains&&meta.story.chains[id]||null; }
+function storySeen(id){ const r=storyRecord(id); return !!(r&&Object.keys(r.steps||{}).length); }
+function storyComplete(id){ const r=storyRecord(id); return !!(r&&r.done); }
+function storyPickPool(){
+  const ids=Object.keys(CHAINS);
+  const unseen=ids.filter(id=>!storySeen(id));
+  const unfinished=ids.filter(id=>storySeen(id)&&!storyComplete(id));
+  const trail=meta.story&&meta.story.trail;
+  const linked=trail&&STORY_META[trail] ? STORY_META[trail].links.filter(id=>ids.includes(id)&&!storyComplete(id)) : [];
+  if(linked.length && talentOwned("yuan_4")) return linked;
+  if(unseen.length) return unseen;
+  if(unfinished.length) return unfinished;
+  return ids;
+}
+function storyEventWeight(ev){
+  const id=STORY_EVENT_IDS[ev.t]; if(!id) return 1;
+  if(S&&S.storyCount>=S.storyLimit) return 0.05;
+  let w=1; const r=storyRecord(id);
+  if(!r||!Object.keys(r.steps||{}).length) w*=2.2;
+  else if(!r.done) w*=1.5;
+  else w*=0.42;
+  if(meta.story&&meta.story.trail&&STORY_META[meta.story.trail]&&STORY_META[meta.story.trail].links.includes(id)) w*=1.25;
+  if(talentOwned("yuan_1")) w*=1.12;
+  if(talentOwned("yuan_4")&&(!r||!r.done)) w*=1.2;
+  if(talentOwned("cang_2")&&r&&Object.keys(r.branches||{}).length<4) w*=1.12;
+  if(talentOwned("cang_3")&&meta.story&&meta.story.trail&&STORY_META[meta.story.trail]&&STORY_META[meta.story.trail].links.includes(id)) w*=1.25;
+  return w;
+}
+function tryChain(S,L,id,activeTxt,doneTxt){
+  if(S.chain){ L.add(activeTxt); return; }
+  if((S.storyCount||0)>=(S.storyLimit||2)){ if(!S.storyLimitLog){ L.add("你这一世已经背着两段未完的往事，先把它们走到尽头。",1); S.storyLimitLog=true; } return; }
+  if((S.chainsDone||{})[id]){ L.add(doneTxt); return; }
+  startChain(S,id);
+}
+function startChain(S,id){
+  if(!S||S.chain||(S.storyCount||0)>=(S.storyLimit||2)) return;
+  const ch=CHAINS[id], st0=ch.steps[0];
+  addLog(`第${S.age}岁，【${ch.t}】${st0.txt}`, 1);
+  if(st0.f) st0.f(S,{gain:yrs=>gainProg(yrs),key:pushKey,add:addLog});
+  recordStoryStep(id,0);
+  const g=st0.gap||[2,4];
+  S.storyCount=(S.storyCount||0)+1;
+  S.chain={id, i:1, at:S.age+g[0]+Math.floor(Math.random()*(g[1]-g[0]+1))};
+  if(S.storyPull) S.storyPullUsed=true;
+}
+/* 临终文本：每个结局都要交代"最后怎么死的" */
+/* 临终文本：每个结局都要交代"最后怎么死的"，并尽可能有诗的重量 */
+const DEATHS = {
+  yaozhe:[
+    S=>"那场病来得急，走得也急。你窝在祖母怀里咽气时，窗外正下着雨。你听见有人哭，也有人低声说：这孩子，还没活过夏天。",
+    S=>"你死在一个寻常的清晨。被子还带着昨夜的暖，桌上的早饭已经凉了。你答应过要去看的山，终究没能去看。",
+    S=>"弥留之际，你看见一只萤火虫从窗缝里挤进来，绕着屋梁飞了三圈。你想伸手去够，它灭了。那年你还不满十八岁，坟头很小，哭你的人很多。",
+    S=>"你没能等到家族测灵的下一次。姐姐替你描了一幅小像，挂在祠堂最角落。每逢祭祀，香灰落你肩头，像替你还未燃尽的命。",
+    S=>"你病中总念叨想养一只自己的蛊。父亲连夜进城买回一枚最便宜的蛊卵，可你终究没等到它破壳。那枚卵后来养在母亲屋里，再没孵化过。",
+    S=>"夜里你疼得睡不着，数着房梁上的蛛网打发时辰。数到第七张时，你看见一只蝉蜕空壳挂在网角——你笑了笑，说：原来你也在这里。这是你此生最后一句话。",
+    S=>"咽气前你忽然不哭了，睁着眼看窗外。窗外什么都没有，只有风。你好像在和什么道别，又好像只是累了。"
+  ],
+  fanfu:[
+    S=>"这年冬天你咳得越来越重。最后那一夜，你推开窗看雪，看了一宿。雪停了，你也停了。邻人收尸时发现，你脚边放着一碗没喝完的米酒——你说过，一辈子没痛快喝过。",
+    S=>"你死在自家院子里，晒着太阳，像睡着了一样。手里还攥着半块馍，是晌午没吃完的。村人凑钱葬了你，坟头的草来年绿得很旺。来上坟的人说：他这一辈子，没害过人。",
+    S=>"你年轻时也曾测出过三转之资，后来伤了空窍，便认了命。临终你摸着空窍的位置，那里空空的。你忽然想起一句旧话，念出声：“……也好。”",
+    S=>"你替人跑了半辈子腿，攒下的元石都给了儿孙。他们哭得很真。你看着他们，心里忽然很平静——原来被人惦记，也是一种修行。",
+    S=>"你是被一锅药慢慢送走的。药是儿媳熬的，苦了一辈子，最后一碗你喝得很慢。你说：苦点好，苦点记得住。",
+    S=>"黄昏时你忽然让家人扶你到村口。你望着那条出山的路，看了很久很久。家人都不知道你在等谁，你也没说。那是你少年时出发修行的地方。",
+    S=>"你死的时候，床头的蛊虫叫了一声。那是只最廉价的青茅蛊，你养了它一辈子，它也没养出什么名堂。可它陪你到最后，一声一声，叫得又细又长。"
+  ],
+  xiaocheng:[
+    S=>"你在小院中安然坐化，徒子徒孙跪了一地。他们未必记得你教过什么，但都记得：那年蛊潮过境，是你挡在村口，说——孩子们往后站。",
+    S=>"临终前你把毕生手札烧了大半。弟子们不解，你说：路是走出来的，不是抄出来的。剩下的几页，你留给了那个最笨的徒弟。",
+    S=>"你是被小辈们围着送走的。最小的那个趴在床头问你：“师傅，修到三转，是不是就能一直活着了？”你笑着摇头，说：“活着不难，难的是知道为什么活。你好好想。”",
+    S=>"三转蛊师，说高不高，说低不低。可方圆百里的人家，办喜事丧事，都要来请你坐头席。你走的那天，全村的灯都亮了，一直亮到出殡。",
+    S=>"你年轻时一心要修到五转。后来教了徒弟，便把这心思放下了。临终你忽然想：若是当年……随即又笑了。徒弟们问您笑什么，你没答。你笑的是，这一世，好像也够本了。",
+    S=>"你死在大雪里，为的是去山那边救一个素不相识的采药人。找到你时，你已经冻硬了，怀里却还捂着那枚救人的蛊丹。后来那采药人每年都来你坟前，坐一整个冬天。",
+    S=>"你晚年嗜酒，常对着一盏残灯讲古。讲到你一生最得意的那个瞬间，你忽然停下来，说：其实那一次，我差点就死在蛊潮里——是有人替我挡了。问是谁，你不肯说，只把酒洒了半杯在地上。"
+  ],
+  qiangzhe:[
+    S=>"临终前，各方势力的名帖堆满了你的案头。你一封没拆，笑着合了眼。门客问要不要回礼，你说：替我回一句——我这一辈子，谁的人情也没欠过。",
+    S=>"你五转之尊，镇压一方便是数十年。油尽灯枯那夜，你独自登上城头，看了一遍你守过的山河。下来时步履平稳，好像只是去看了一场晚霞。",
+    S=>"仇家都以为你会留一句狠话。可你只是把年轻时的命蛊取出来，放在阳光下看了半晌，说：老伙计，辛苦你，陪我走了这么远。",
+    S=>"你是坐在那把刻满交战痕迹的旧藤椅上走的。侍从们不敢动那把椅子——说那是当年你以半城为注，赢来的。椅背上的抓痕，比任何战绩都深。",
+    S=>"临终你召来所有弟子，只嘱咐了一件事：他日若有人寻仇，莫要替我报仇。弟子们不解，你说：我这一生恩怨太多，你们都替我扛了，那我还修什么道。",
+    S=>"你走得很快，没受什么罪。前一晚你还在教小孙儿认蛊谱，指着一枚画得歪歪扭扭的幼蛊说：这个，像你爷爷。第二天早上，你就没再醒来，脸上还带着笑。"
+  ],
+  daolv:[
+    S=>"你先走了一步。道侣没有哭，只把你们的旧物一件件摆上案头，说：等等我，快了。此后每年你的忌日，案头都会多一样新东西——她说，是替你这一世没走完的路，继续往前走。",
+    S=>"她握着你的手，直到它变凉。她忽然俯下身，在你耳边轻轻说：下辈子，换我先去找你。你没能回答，可你嘴角的弧度，谁都知道那是答应的意思。",
+    S=>"你走时窗外正下着雨，和她第一次来找你的那天一样。她替你把鞋摆正，像摆一件寻常的行李。她说：你这个人，最讨厌拖泥带水——那我也不拖着你，你走好。",
+    S=>"双修之人，神魂相系。你走的那一刻，她在千里之外忽然抬头，看向你的方向。她没有慌，只是慢慢坐下，给自己斟了杯茶，说：那我就替他，把这杯茶喝到最后。",
+    S=>"你笑着走的。她问你笑什么，你说：笑我们这辈子，吵了八百回架，每一回都是我先低头。她啐了你一口：下辈子，该你让着我了。你没能回答——可你闭眼时的样子，分明在说：好。"
+  ],
+  mozun:[
+    S=>"正邪两道齐聚城外，等来的却只有你的讣告。没有人敢信，也没有人敢进山验尸。后来有人在山道上拾到一枚断裂的魔蛊，才知你是真的走了。那枚魔蛊此后被人供起，叫它——压得住整座江湖的那个名字。",
+    S=>"你坐在魔殿尽头那张千年不化的寒玉椅上，闭眼前只说了一句：把窗子打开。侍从打开窗，山风灌进来，卷走你衣袍上最后一缕魔气。后来有人说，那阵风里，竟闻不出半点血腥。",
+    S=>"你这一生杀了很多人，也救过很多人。临终前你想起的，不是刀光，是很多年前在血色山道救下的那个村童——他后来成了正道魁首，年年都往你这里递一坛酒。你死那日，那坛酒正好送到。",
+    S=>"你以为会有心魔来找你算账。可你等了一夜，什么都没来。你哑然失笑：连心魔都不肯收我，这魔头，当得可真够孤独的。言罢，安然阖目。",
+    S=>"你散去一身魔功那晚，方圆百里的蛊虫都在哀鸣。正派修士以为你要大开杀戒，如临大敌。天明时分，山门大开，你坐在门槛上晒太阳，像寻常老头。三日之后，你在阳光里睡着了，再没醒。",
+    S=>"你留的遗书只有七个字：这江湖，我不欠了。正邪两道为此吵了很久——有人说你虚伪，有人说你彻悟。只有当年那个村童，如今的魁首，把遗书看了整夜，说：他确实不欠了。"
+  ],
+  zongshi:[
+    S=>"满山弟子长跪送行。宗门的钟为你响了三天三夜，之后每年今日，还会再响。后来凡是从宗门走出去的蛊师，路过钟楼都要停一停——他们说，那是老先生还在给后人报时。",
+    S=>"你临终前把开山祖师的牌位擦了三遍，又把最小的徒孙叫到床前，问他：你最想学什么？孩子说想学你最厉害的术。你笑着摇头：教你的第一课，是学会不厉害。",
+    S=>"你这一生没收过几个弟子，但教出来的，个个都是撑得起门面的。你走那日，大弟子从边关星夜赶回，还是晚了一步。他跪在榻前很久，最后站起来，把宗门令牌接了过去——你说过，接令牌的人，不许哭。",
+    S=>"你晚年常坐在山门口，看弟子们下山。有人问您怎么不去云游，你说：路是你们的了，我在这儿替你们看着，免得你们走远了找不到家。你走之后，山门口那把藤椅空了三天，被弟子们搬回了祠堂，再没人坐过。",
+    S=>"你是笑着走的，手里还握着半卷没批完的功法。弟子们说：先生一生，连走都走得像个先生。他们把那半卷功法补完，署上了你的名字——补的部分，一个字都没署。",
+    S=>"临终前你把掌门叫来，只问了一句：这些年，宗门可曾做过一件对不起山下百姓的事？掌门答：没有。你说：那就好。答完，你便去了。满山钟声，为你而鸣。"
+  ],
+  jiuzhuan:[
+    S=>"你散尽一身功力，化作漫天流萤，落在山川草木之间。后人寻遍千山，只找到一枚通透如水的蛊壳。他们把它供在祖师堂，每年秋夜，那蛊壳仍会发出极淡的光，像你还在巡山。⟂",
+    S=>"八转以上，寿元本可绵长。可你算了算，这一世想做的事都做完了，便不再强留。你把蛊丹分给山下生病的孩童，自己倒头睡下。来年开春，山上新桃开得特别好。",
+    S=>"你是唯一能让正邪两道同时送来挽联的人。挽联没有恩怨，只有两个字的分量。停灵七日，方圆三百里的蛊虫都来吊唁，黑压压落满山道，无人敢驱。",
+    S=>"临终你盘坐山巅，看云海翻涌如旧。你忽然想：修行一生，图的到底是什么？你没能答上来，可你嘴角的弧度说明，你已经不急着要答案了。云海之上，你缓缓阖目，如尊者入定。",
+    S=>"你生前镇压的最后一桩蛊患，是三百年无人能解的旧祸。你以残躯为锁，将它封入山腹。走的那一刻，整座山轻轻震了一下，像一声叹息。后人在山口立碑：此山之下，镇着一位【境】的慈悲。⟂"
+  ],
+  zuisu:[
+    S=>"天雷落下时你没有躲。灰烬里只剩半枚碎裂的本命蛊，和一声没人听见的笑。后来有人在那片焦土上种了一株桃树——来年开花时，花瓣总朝着永生之门的方向。",
+    S=>"最后一劫劈下来时，你忽然想起少年时第一次引气入体的那个傍晚。原来走到尽头，与开始时一样安静。你张开双臂，像拥抱一个迟到多年的老朋友。",
+    S=>"你败了。可败之前，你在雷海中硬撑了三日三夜，让山下的凡人得以撤离。你灰飞烟灭之处，后人立了个无名碑，碑上只有一行小字：此人有名，其道无名。",
+    S=>"永生之门就在眼前，只差一步。你伸手去够——雷火洞穿胸膛时，你竟觉得那只手够得比任何时候都远。门内透出的光，你看见了。够了。",
+    S=>"同修们劝你再多等一世，你摇头：等了太久了。你踏上雷海时背对着所有人，没人看清你的表情。只听见你最后说了句：若有一线生机，替我转告后来人——路，我铺到这里了。"
+  ],
+  dukai:[
+    S=>"肉身化虹的最后一瞬，你回望人间——来时的路，已经铺满了霞光。你看见故乡的炊烟，看见仇家的坟头长满青草，看见当年那个被你救过的孩子正在山腰练剑。原来所谓永生，是终于可以不带遗憾地，去看一场没有尽头的日出。",
+    S=>"万蛊朝拜，天道让路。你踏光而上时，忽有所感，回头在山壁上留了一指：后人至此处，当知路非我独行。那一指落下，整座山石都泛起温润的光。此后百年，常有后来人在那指痕前静立良久。",
+    S=>"你叩开永生之门的那一刻，门内涌出的不是仙气，是无数先贤的影子。他们对你拱手：等了三千年，终于有人把门推开了一条缝。你踏进去，身后人间传来第一声鸡鸣。",
+    S=>"你走得没有想象中轰轰烈烈——只是某一夜，你忽然起身，推开窗，看见满天星斗都在为你让路。你回头看了一眼熟睡的道侣，没有惊动任何人，化作一道光，轻轻合上了门。"
+  ],
+  tianqi:[
+    S=>"天音散尽，你的身躯化作点点星光升上去。人间从此多了一个新的传说。据说那一夜，全天下打更人都看见一尾流星往天上飞，边飞边回头，像是不舍得人间这口烟火气。",
+    S=>"春秋蝉骤然齐鸣，如万钟齐发。你未修到九转，却被天道垂青——你笑了笑，把衣襟整好，像赴一场迟到的约。星光托着你上升时，你心里想着的，竟是山下那碗没喝完的豆花。",
+    S=>"你化光而去的地方，留下了一枚温热的蛊卵。后来那枚卵孵出的蛊虫，从不认主，只在每年的同一夜，朝着星空轻轻鸣叫——有人说，那是你在天上，给故人打的一个招呼。",
+    S=>"凡人肉眼看不见那一夜的奇观，只觉得心口忽然一暖。全城的蛊虫在那一刻齐齐朝东方俯首，像在送别什么。你走之后，老屋的窗台上，那盆你养了半辈子的兰草，开出了第一朵花。"
+  ]
+};
+const ENDINGS = {
+  yaozhe:{n:"早夭之殇", d:"尚未成年便黯然离世，来世再试", h:"18 岁前寿终——这也是一种图鉴", r:"普通"},
+  fanfu :{n:"碌碌凡尘", d:"未入三转，以凡人之身终老", h:"未入三转，平凡终老", r:"普通"},
+  xiaocheng:{n:"初露锋芒", d:"三至四转蛊师，足以庇护一方", h:"终老前修到三至四转蛊师", r:"优良"},
+  qiangzhe:{n:"一方豪强", d:"五转蛊师之尊，凡人巅峰，名震一方", h:"终老前修到五转蛊师", r:"稀有"},
+  jiuzhuan:{n:"尊者落幕", d:"八转以上蛊仙寿终正寝，世间再无此人", h:"以八转以上蛊仙之尊寿终", r:"史诗"},
+  dukai :{n:"得证永生", d:"九转蛊仙叩开永生之门——古往今来，无人走到这一步", h:"九转蛊仙冲击永生成功，古往今来无人做到", r:"传说"},
+  tianqi:{n:"天授永生", d:"天道垂青，蛊道圆满——凡骨亦可证就永生，万中无一", h:"任意一世皆有可能：天道偶有垂青，约五万分之一", r:"传说"},
+  zuisu :{n:"陨于永生路", d:"九转巅峰冲击永生失败，道消身殒，虽败犹荣", h:"九转蛊仙强行冲击永生，失败身陨", r:"史诗"},
+  mozun :{n:"一代魔尊", d:"以魔证道，魔威震世，正邪皆俯首", h:"走魔道，终老前修到七转蛊仙", r:"史诗"},
+  zongshi:{n:"一代宗师", d:"正道栋梁，开宗立派，桃李满天下", h:"入正道，终老前修到七转蛊仙", r:"史诗"},
+  daolv :{n:"双仙眷侣", d:"与道侣携手登高，共赴大道，羡煞旁人", h:"与道侣结缘、两立道心，终老前修到四转蛊师", r:"稀有"}
+};
+/* 图鉴「下一目标」的推荐顺序 */
+const GOAL_ORDER = ["dukai","tianqi","jiuzhuan","zuisu","mozun","zongshi","qiangzhe","daolv","xiaocheng"];
+
+/* ============ 轮回道树（永久局外构筑） ============ */
+const TALENT_TREES = [
+  {key:"ming",icon:"🪶",name:"命",desc:"生存与机缘",talents:[
+    {id:"ming_1",tier:1,name:"蝉蜕随身",cost:20,desc:"每世初始寿元额外 +2 年；寿元的随机波动仍然保留。"},
+    {id:"ming_2",tier:2,name:"蛊缘微引",cost:50,requires:"ming_1",desc:"机缘类事件权重 ×1.25，只提高倾向，不保证结果。"},
+    {id:"ming_3",tier:3,name:"夭折庇护",cost:120,requires:"ming_2",desc:"十八岁前早夭时，额外保留本局一半的轮回残念收益，让失败也能留下下一世。"},
+    {id:"ming_4",tier:4,name:"蛊潮归我",cost:300,requires:"ming_3",desc:"蛊潮与虫灾事件更容易出现转机；不会抹去受伤与代价。"}
+  ]},
+  {key:"yuan",icon:"🕯",name:"缘",desc:"人际与故事",talents:[
+    {id:"yuan_1",tier:1,name:"红尘引",cost:20,desc:"每世在成年后必有机会牵起一条尚未完成的剧情链，具体是哪一条仍随机。"},
+    {id:"yuan_2",tier:2,name:"月下有约",cost:50,requires:"yuan_1",desc:"道侣情缘事件权重 ×1.6，但不会强制结缘。"},
+    {id:"yuan_3",tier:3,name:"故人约",cost:120,requires:"yuan_2",desc:"牵挂名录中的故人更容易在后世重逢；重逢只改变故事，不直接增加战力。"},
+    {id:"yuan_4",tier:4,name:"往事重演",cost:300,requires:"yuan_3",desc:"完成一条故事后，下一世会轻轻偏向它相连的未完故事；仍不会指定结果。"}
+  ]},
+  {key:"dao",icon:"🗡",name:"道",desc:"修行与突破",talents:[
+    {id:"dao_1",tier:1,name:"稳如磐石",cost:20,desc:"突破失败后至少保留 68% 进度；判断型人格的优势不再被削弱。"},
+    {id:"dao_2",tier:2,name:"天劫窥视",cost:50,requires:"dao_1",desc:"冲击永生的成功判定增加 0.3 个百分点，终局仍然极难。"},
+    {id:"dao_3",tier:3,name:"窃天机",cost:120,requires:"dao_2",desc:"抽取资质时有小概率向上一档偏移；低资质仍能走出自己的路。"},
+    {id:"dao_4",tier:4,name:"轮回圆满",cost:300,requires:"dao_3",desc:"完成图鉴里程碑时额外获得少量轮回残念和一条命数边注，不直接提高结局概率。"}
+  ]},
+  {key:"cang",icon:"📚",name:"藏",desc:"记忆与图鉴",talents:[
+    {id:"cang_1",tier:1,name:"见微知著",cost:20,desc:"首次遇见故事时，多留下一片故事残页；让局外收集从第一章就开始有回响。"},
+    {id:"cang_2",tier:2,name:"藏卷成册",cost:50,requires:"cang_1",desc:"往事录会优先展开未读分支，重复章节仍可能出现，但不会长期挤占新内容。"},
+    {id:"cang_3",tier:3,name:"旧物有灵",cost:120,requires:"cang_2",desc:"完成故事后，相连地点、物件和人物在后世获得更明显的回声。"},
+    {id:"cang_4",tier:4,name:"万象归藏",cost:300,requires:"cang_3",desc:"临终文本首次读到时获得额外少量残念；每一种告别都算作真正走过的路。"}
+  ]},
+  {key:"yun",icon:"🌌",name:"运",desc:"预兆与转机",talents:[
+    {id:"yun_1",tier:1,name:"命数预兆",cost:20,desc:"每世开局看见一句模糊预兆，只提示方向，不揭示结局。"},
+    {id:"yun_2",tier:2,name:"避凶一线",cost:50,requires:"yun_1",desc:"每世第一次遭遇凶险事件时，失败结果会被轻轻削弱。"},
+    {id:"yun_3",tier:3,name:"借势而行",cost:120,requires:"yun_2",desc:"机缘事件与世界转折稍有偏向，但普通生活和坏结果仍然存在。"},
+    {id:"yun_4",tier:4,name:"运转星河",cost:300,requires:"yun_3",desc:"终局最关键的一次判定多一线回旋；它只让极小的可能被看见。"}
+  ]}
+];
+const TALENT_IDS=TALENT_TREES.reduce((a,t)=>a.concat(t.talents.map(x=>x.id)),[]);
+function talentOwned(id){ return !!(meta.talents&&meta.talents[id]); }
+function talentSpent(){ return TALENT_TREES.reduce((sum,t)=>sum+t.talents.reduce((n,x)=>n+(talentOwned(x.id)?x.cost:0),0),0); }
+function talentById(id){
+  for(const tree of TALENT_TREES){ const found=tree.talents.find(x=>x.id===id); if(found) return found; }
+  return null;
+}
+
+/* 牵挂名录与道号：把一世里的关系和成就留到下一世。 */
+const BOND_NAMES={道侣:["沈砚","顾青禾","谢晚晴","陆听潮","苏小满","宁照雪"],宿敌:["裴无咎","秦照野","顾长锋","韩孤鸿","叶沉舟","周问道"],同袍:["老伍","石头","林十三","赵小满"]};
+const ACHIEVEMENTS=[
+  {id:"first_rebirth",title:"再听蝉鸣",desc:"完成第一世轮回",reward:3,progress:()=>[Math.min(meta.runs,1),1]},
+  {id:"ten_lives",title:"十世行人",desc:"累计完成十世人生",reward:8,progress:()=>[Math.min(meta.runs,10),10]},
+  {id:"hundred_lives",title:"百转老人",desc:"累计完成一百世人生",reward:20,progress:()=>[Math.min(meta.runs,100),100]},
+  {id:"story_six",title:"拾得六声",desc:"发现六条往事链",reward:6,progress:()=>[Math.min(storyStats().found,6),6]},
+  {id:"story_eighteen",title:"阅尽半卷",desc:"发现十八条往事链",reward:12,progress:()=>[Math.min(storyStats().found,18),18]},
+  {id:"story_thirty",title:"阅尽人间",desc:"发现三十条往事链",reward:30,progress:()=>[Math.min(storyStats().found,30),30]},
+  {id:"all_endings",title:"生死簿全",desc:"集齐全部结局",reward:30,progress:()=>[Math.min(Object.keys(meta.codexEnd||{}).length,Object.keys(ENDINGS).length),Object.keys(ENDINGS).length]},
+  {id:"all_paths",title:"三道皆行",desc:"走过散修、正道与邪修",reward:10,progress:()=>[Math.min(Object.keys(meta.codexPath||{}).length,3),3]},
+  {id:"all_apt",title:"五相皆见",desc:"见过五档资质",reward:12,progress:()=>[Math.min(Object.keys(meta.codexApt||{}).length,APTS.length),APTS.length]},
+  {id:"six_talents",title:"初成道树",desc:"点亮六个永久天赋",reward:12,progress:()=>[Math.min(TALENT_IDS.filter(talentOwned).length,6),6]},
+  {id:"full_tree",title:"十二道枝",desc:"点亮十二个永久天赋",reward:40,progress:()=>[Math.min(TALENT_IDS.filter(talentOwned).length,TALENT_IDS.length),TALENT_IDS.length]},
+  {id:"death_twenty",title:"读过二十种告别",desc:"收集二十篇临终文本",reward:15,progress:()=>[Math.min(Object.values(meta.codexDeath||{}).reduce((n,a)=>n+(Array.isArray(a)?a.length:0),0),20),20]},
+  {id:"bond_three",title:"有人记得",desc:"让三位故人达到羁绊二级",reward:15,progress:()=>[Math.min((meta.bonds||[]).filter(b=>b.level>=2).length,3),3]}
+];
+function normalizeBonds(raw){
+  if(!Array.isArray(raw)) return [];
+  return raw.slice(0,8).map((b,i)=>({id:String(b&&b.id||`bond-${i}`).slice(0,40),name:String(b&&b.name||"无名故人").slice(0,16),type:["道侣","宿敌","同袍"].includes(b&&b.type)?b.type:"故人",origin:String(b&&b.origin||"").slice(0,120),level:Math.max(0,Math.min(3,Number(b&&b.level)||0)),visits:Math.max(0,Number(b&&b.visits)||0),last:String(b&&b.last||"").slice(0,180)}));
+}
+function normalizeMap(raw){
+  const out={}; if(!raw||typeof raw!=="object") return out;
+  Object.keys(raw).slice(0,80).forEach(k=>{if(raw[k]) out[String(k).slice(0,50)]=true;}); return out;
+}
+
+/* ============ 存档 ============ */
+const SAVE_KEY = "guzhenren_save_v1";
+const SAVE_VERSION = 7;
+const ARCHIVE_LIMIT = 80;
+let meta = load();
+function emptyStory(){ return {chains:{}, moments:{}, trail:"", milestones:{}, pages:0}; }
+function normalizeStory(s){
+  const out=emptyStory();
+  if(!s || typeof s!=="object") return out;
+  if(s.chains && typeof s.chains==="object"){
+    Object.keys(s.chains).filter(id=>CHAINS[id]&&STORY_META[id]).forEach(id=>{
+      const c=s.chains[id]; if(!c || typeof c!=="object") return;
+      out.chains[id]={steps:c.steps&&typeof c.steps==="object"?c.steps:{},branches:c.branches&&typeof c.branches==="object"?c.branches:{},endings:c.endings&&typeof c.endings==="object"?c.endings:{},done:!!c.done,visits:Math.max(0,Number(c.visits)||0)};
+    });
+  }
+  if(s.moments && typeof s.moments==="object"){
+    Object.keys(s.moments).slice(0,200).forEach(k=>{ out.moments[k]=Math.max(0,Number(s.moments[k])||0); });
+  }
+  out.trail=typeof s.trail==="string"&&STORY_META[s.trail]?s.trail:"";
+  out.milestones=s.milestones&&typeof s.milestones==="object"?s.milestones:{};
+  out.pages=Math.max(0,Number(s.pages)||0);
+  return out;
+}
+function normalizeArchives(list){
+ if(!Array.isArray(list)) return [];
+  return list.filter(a=>a&&typeof a==="object"&&(a.key==="dukai"||a.key==="tianqi")).slice(0,ARCHIVE_LIMIT).map((a,i)=>{
+    if(!a || typeof a!=="object") return null;
+    const line=x=>({text:String(x&&x.text||"").slice(0,500),cls:["good","bad","big"].includes(x&&x.cls)?x.cls:""});
+    return {
+      id:typeof a.id==="string"?a.id:`legacy-${i}`,
+      t:Number.isFinite(a.t)?a.t:Date.now(), key:typeof a.key==="string"?a.key:"fanfu", ending:String(a.ending||"").slice(0,30),
+      apt:String(a.apt||"").slice(0,8), gu:String(a.gu||"").slice(0,30), persona:String(a.persona||"").slice(0,30), personaKey:String(a.personaKey||"").slice(0,8),
+      path:String(a.path||"散修").slice(0,12), age:Math.max(0,Number(a.age)||0), rank:Math.max(1,Number(a.rank)||1), stage:Math.max(0,Number(a.stage)||0),
+      lifespan:Math.max(0,Number(a.lifespan)||0), reborn:!!a.reborn, spouse:!!a.spouse, daoHeart:Math.max(0,Number(a.daoHeart)||0), choiceMode:String(a.choiceMode||"manual").slice(0,8),
+      choices:Array.isArray(a.choices)?a.choices.slice(0,8).map(x=>String(x).slice(0,120)):[], choicePlan:Array.isArray(a.choicePlan)?a.choicePlan.slice(0,8).map(x=>({t:String(x&&x.t||"").slice(0,120),age:Math.max(0,Number(x&&x.age)||0),done:!!(x&&x.done)})):[], chainsDone:a.chainsDone&&typeof a.chainsDone==="object"?a.chainsDone:{}, storyNew:Array.isArray(a.storyNew)?a.storyNew.slice(0,20).map(x=>String(x).slice(0,160)):[],
+      keys:Array.isArray(a.keys)?a.keys.slice(0,80).map(x=>({t:String(x&&x.t||"").slice(0,160),w:Math.max(0,Number(x&&x.w)||0)})):[],
+      log:Array.isArray(a.log)?a.log.slice(0,500).map(line):[], highlights:Array.isArray(a.highlights)?a.highlights.slice(0,120).map(line):[],
+      report:String(a.report||"").slice(0,6000), quote:String(a.quote||"").slice(0,200)
+    };
+  }).filter(a=>a&&(a.key==="dukai"||a.key==="tianqi"));
+}
+function normalizeSeenMap(raw, allowed, limit){
+  const out={};
+  if(!raw || typeof raw!=="object") return out;
+  Object.keys(raw).slice(0,limit||allowed.length).forEach(k=>{ if(allowed.includes(k)&&raw[k]) out[k]=true; });
+  return out;
+}
+function normalizeDeathCodex(raw){
+  const out={};
+  if(!raw || typeof raw!=="object") return out;
+  Object.keys(raw).slice(0,Object.keys(DEATHS).length).forEach(k=>{
+    if(!DEATHS[k]||!Array.isArray(raw[k])) return;
+    const seen=[];
+    raw[k].slice(0,DEATHS[k].length).forEach(x=>{
+      const text=String(x||"").slice(0,500);
+      if(text&&!seen.includes(text)) seen.push(text);
+    });
+    if(seen.length) out[k]=seen;
+  });
+  return out;
+}
+function normalizeSave(s){
+  if(!s || typeof s !== "object" || !Number.isFinite(s.exp) || !Number.isFinite(s.level)) return null;
+  return {
+    saveVersion:SAVE_VERSION,
+    exp:Math.max(0,s.exp), level:Math.max(1,s.level), pity:Math.max(0,s.pity||0),
+    runs:Math.max(0,s.runs||0), codexGu:(s.codexGu&&typeof s.codexGu==="object")?s.codexGu:{},
+    codexEnd:(s.codexEnd&&typeof s.codexEnd==="object")?s.codexEnd:{},
+    hall:Array.isArray(s.hall)?s.hall.slice(0,200):[], archives:normalizeArchives(s.archives), talents:normalizeSeenMap(s.talents,TALENT_IDS,TALENT_IDS.length),
+    codexApt:normalizeSeenMap(s.codexApt,APTS.map(x=>x.k),APTS.length), codexPersona:normalizeSeenMap(s.codexPersona,PERSONA_KEYS,PERSONA_KEYS.length), codexPath:normalizeSeenMap(s.codexPath,["散修","正道","邪修"],3), codexDeath:normalizeDeathCodex(s.codexDeath),
+    dao:typeof s.dao==="string"?s.dao.slice(0,12):"", story:normalizeStory(s.story), bonds:normalizeBonds(s.bonds), achievements:normalizeMap(s.achievements), titles:normalizeMap(s.titles), equippedTitle:typeof s.equippedTitle==="string"?s.equippedTitle.slice(0,40):"",
+    choiceMode:(s.choiceMode==="auto"||s.choiceMode==="off")?s.choiceMode:"manual"
+  };
+}
+function load(){
+  try{
+    const s = JSON.parse(localStorage.getItem(SAVE_KEY));
+    const normalized=normalizeSave(s);
+    if(normalized) return normalized;
+  }catch(e){}
+  return {saveVersion:SAVE_VERSION,exp:0,level:1,pity:0,runs:0,codexGu:{},codexEnd:{},hall:[],archives:[],talents:{},codexApt:{},codexPersona:{},codexPath:{},codexDeath:{},story:emptyStory(),bonds:[],achievements:{},titles:{},equippedTitle:"",choiceMode:"manual"};
+}
+function save(){ meta.saveVersion=SAVE_VERSION; localStorage.setItem(SAVE_KEY,JSON.stringify(meta)); }
+function exportSave(){
+  const payload={game:"guzhenren-sim",saveVersion:SAVE_VERSION,exportedAt:new Date().toISOString(),data:meta};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob); a.download=`蛊真人模拟器存档-${new Date().toISOString().slice(0,10)}.json`; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+async function importSave(file){
+  try{
+    const raw=JSON.parse(await file.text());
+    if(raw.game && raw.game!=="guzhenren-sim") throw new Error("存档不属于本游戏");
+    const normalized=normalizeSave(raw.data||raw);
+    if(!normalized) throw new Error("存档格式不正确");
+    localStorage.setItem(SAVE_KEY,JSON.stringify(normalized));
+    alert("存档导入成功，页面将重新载入。"); location.reload();
+  }catch(e){ alert("导入失败："+(e&&e.message?e.message:"无法读取文件")); }
+}
+
+/* ============ 工具 ============ */
+const $ = id => document.getElementById(id);
+function wpick(list, wf){ let t=0; for(const it of list) t+=wf(it); let r=Math.random()*t; for(const it of list){ r-=wf(it); if(r<=0) return it; } return list[0]; }
+function levelExp(lv){ return Math.floor(50*Math.pow(lv,1.5)); }
+function memoryBonus(){ return (meta.level-1)*0.005; }         // 高资质概率加成
+function growthBonus(){ return 1+(meta.level-1)*0.01; }        // 成长加成
+function codexGrowthBonus(){ // 图鉴收集加成：每解锁 5 只命蛊，修炼效率 +3%
+  return 1+Math.floor(Object.keys(meta.codexGu).length/5)*0.03;
+}
+function threshold(r,s){ return Math.floor(80*Math.pow(r,2.0)*(1+s*0.8)); }
+function rankGain(r){ return 8*Math.pow(1.55,r-1); } // 境界越高，修炼效率越高
+function combatBonus(){ return S && S.gu.c==="攻伐" ? 0.15 : 0; } // 攻伐蛊斗战加成
+function gainMul(){ // 邪蛊/邪修修炼效率加成
+  let m=1;
+  if(S.gu.c==="邪蛊") m*=1.15;
+  if(S.path==="邪修") m*=1.08;
+  return m;
+}
+function gainProg(yrs){ // 折算为"若干年修炼收获"的进度
+  const g=S.gu.g*S.apt.f*growthBonus()*codexGrowthBonus()*S.bonus*rankGain(S.rank)*yrs*gainMul();
+  S.prog+=g; S.pow+=g; return g;
+}
+
+/* ============ 命运抉择开关 ============ */
+function choiceMode(){ return meta.choiceMode==="auto"||meta.choiceMode==="off" ? meta.choiceMode : "manual"; }
+function renderChoiceMode(){
+  const cm=choiceMode();
+  document.querySelectorAll("#choiceModeCtl [data-cm]").forEach(b=>b.classList.toggle("on",b.dataset.cm===cm));
+}
+
+/* ============ UI 切换 ============ */
+const SECS=["home","draw","life","result"];
+function show(name){ SECS.forEach(s=>$(s).classList.toggle("hide",s!==name)); renderMeta(); }
+function renderMeta(){
+  const need=levelExp(meta.level);
+  $("metaBar").innerHTML =
+    `<span class="chip">春秋蝉残鸣 Lv.${meta.level}</span>`+
+    `<span class="chip">记忆经验 ${meta.exp}/${need}</span>`+
+    `<span class="chip">轮回残念 ${meta.pity}（100可保底）</span>`+
+    `<span class="chip">转世 ${meta.runs} 次</span>`+
+    `<span class="chip">👑 证得永生 ${meta.hall.length} 次</span>`+
+    `<span class="chip">图鉴 ${Object.keys(meta.codexGu).length}/${GUS.length} · ${Object.keys(meta.codexEnd).length}/${Object.keys(ENDINGS).length}</span>`+
+    `<span class="chip">故事 ${storyStats().found}/${Object.keys(STORY_META).length}</span>`+
+    `<span class="chip">牵挂 ${meta.bonds?meta.bonds.length:0}/8</span>`+
+    `<span class="chip">🍀 图鉴加成 +${Math.floor((codexGrowthBonus()-1)*100)}%</span>`;
+}
+
+/* ============ 抽卡 ============ */
+let draw = null;
+function goalHint(apt){
+  if(apt.cap>=9) return "🎯 本世可期：九转蛊仙乃至得证永生";
+  if(apt.cap>=5) return "🎯 本世可期：五转巅峰，冲击蛊仙";
+  if(apt.cap>=4) return "🎯 本世可期：修到四转蛊师";
+  if(apt.cap>=3) return "🎯 本世可期：修到三转蛊师";
+  return "🎯 本世可期：等待温养空窍、逆天改命的一线天机";
+}
+function doDraw(auto){
+  // 保底
+  let forced = false;
+  if(meta.pity>=100){ meta.pity-=100; forced=true; }
+  let apt, stolenApt=false;
+  if(forced){
+    apt = wpick(APTS.slice(3), a=>a.w); // 必得甲等及以上
+  }else{
+    apt = wpick(APTS, a=> a.f>=1.5 ? a.w*(1+memoryBonus()*20) : a.w);
+  }
+  if(!forced&&talentOwned("dao_3")&&Math.random()<0.12){
+    const ai=APTS.indexOf(apt); if(ai>0){ apt=APTS[ai-1]; stolenApt=true; }
+  }
+  const gu = wpick(GUS, g=>({凡:30,良:24,稀:16,世:7,仙:2}[g.r]));
+  const persona = makePersona(wpick(PERSONA_KEYS,()=>1));
+  draw = {apt, gu, persona, forced, stolenApt};
+  $("drawHint").textContent = forced ? "✨ 轮回残念涌动，此世资质必然不凡！" : (stolenApt?"🜂 天机被你从命数缝隙里偷出一线……":"神识沉入空窍，资质与本命蛊即将揭晓……");
+  $("drawApt").textContent="?"; $("drawApt").className="value";
+  $("drawGu").textContent="?"; $("drawGu").className="value";
+  $("drawPersona").textContent="?"; $("drawPersona").className="value";
+  $("drawGoal").classList.add("hide");
+  $("btnAwaken").classList.add("hide");
+  show("draw");
+  setTimeout(()=>{
+    $("drawApt").textContent = apt.k === "十绝" ? "十绝体·十成真元" : apt.k + " 等资质"; $("drawApt").className = "value apt-"+apt.k;
+    $("drawAptDesc").textContent = APT_DESC[apt.k];
+    $("drawGu").textContent = gu.n; $("drawGu").className = "value rar-"+gu.r;
+    $("drawGuDesc").textContent = `【${gu.r}·${gu.c}】${gu.d}｜${GCLS[gu.c].d}`;
+    $("drawPersona").textContent = `「${persona.n}」${persona.k}`;
+    $("drawPersonaDesc").textContent = personaDesc(persona);
+    $("drawGoal").textContent = goalHint(apt);
+    $("drawGoal").classList.remove("hide");
+    if(auto){ setTimeout(startLife, 500); }
+    else{ $("btnAwaken").classList.remove("hide"); }
+  }, 700);
+}
+
+/* ============ 人生模拟 ============ */
+let S=null, timer=null, speed=1, finished=false, ending=false, _ff=false;
+let lastRunLog="", lastRunHi="", lastRunTitle="", lastReportText="";
+function showDestiny(txt){
+  const d=$("destiny"); d.textContent=txt; d.classList.remove("hide");
+}
+function updateLifeSub(){
+  if(!S) return;
+  $("lifeSub").textContent = `道途：${S.path||"散修"}${S.spouse?" · 已结道侣":""}${S.daoHeart?" · 道心坚定":""}`;
+}
+function ascendDelay(key, txt, ms){
+  /* 飞升时刻：金色横幅渲染到属性栏，停留片刻再进结算；跳过模式直接结算 */
+  ending=true; clearInterval(timer);
+  addLog(txt, 3);
+  if(_ff || ms<=0){ return endLife(key); }
+  showDestiny(txt.replace(/^第\d+岁，/,""));
+  setTimeout(()=>endLife(key), ms);
+}
+function startLife(){
+  const apt=draw.apt, gu=draw.gu;
+  S = {
+    age:6, rank:1, stage:0, pow:10, bonus:1, gu, apt, path:"散修",
+    persona: draw.persona || makePersona(wpick(PERSONA_KEYS,()=>1)),
+    /* 原著设定：凡人寿命约百年；升转不增寿，寿元靠寿蛊 */
+    lifespan: 78 + Math.floor(Math.random()*22) + (talentOwned("ming_1")?2:0),
+    prog: 0, keys: [], choices: [], storyNew: [], storyCount:0, storyLimit:2
+  };
+  meta.codexApt[S.apt.k]=true;
+  meta.codexPersona[S.persona.k]=true;
+  S.storyPull=talentOwned("yuan_1");
+  S.bondBias=talentOwned("yuan_2")?1.6:1;
+  S.fortuneShield=talentOwned("yun_2");
+  // 本局命运抉择安排：开关模式决定是否有抉择（手动/自动都排期，关闭则不排）
+  const cm = choiceMode();
+  S.choiceMode = cm;
+  S.choices = [];
+  if(cm!=="off"){
+    const pool=CHOICES.slice();
+    for(let i=pool.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [pool[i],pool[j]]=[pool[j],pool[i]]; }
+    const n = 2 + (Math.random()<0.5?1:0);
+    const slots=[[10,18],[24,45],[50,75]];
+    for(let i=0;i<n;i++){ const [a,b]=slots[i]; S.choices.push({c:pool[i], at:a+Math.floor(Math.random()*(b-a+1)), done:false}); }
+  }
+  finished=false; ending=false;
+  $("destiny").classList.add("hide");
+  $("choiceBox").classList.add("hide");
+  $("log").innerHTML="";
+  $("lifeName").textContent = `${gu.n}（${apt.k==="十绝"?"十绝体":apt.k+"等"}） · 「${S.persona.n}」`;
+  updateLifeSub();
+  addLog(`第6岁，家族测灵大典：空窍${apt.k==="十绝"?"十成真元，十绝体！":apt.k+"等资质"}，觉醒本命蛊「${gu.n}」（${gu.r}·${gu.c}），寿元约 ${S.lifespan} 年`, 1);
+  addLog(`${GCLS[gu.c].icon} 流派特性：${GCLS[gu.c].d}`);
+  addLog(`☁️ 道心人格「${S.persona.n}」（${S.persona.k}）：${personaDesc(S.persona)}`);
+  if(talentOwned("yun_1")){
+    const signs=["东边有旧火，别急着把它当成天明。","有人会在你最不想回头时叫你的名字。","今夜的风向不坏，但风里有一笔未还的人情。","你会遇见一件不属于你的遗物，是否归还由你。","雪会替你遮住一条路，也会替你留下脚印。"];
+    S.forecast=signs[Math.floor(Math.random()*signs.length)]; addLog(`🌌 命数预兆：${S.forecast}`,3);
+  }
+  meta.runs++; save();
+  reportRun();
+  show("life");
+  renderLife();
+  timer=setInterval(tick, 260/speed);
+}
+function addLog(txt, cls){
+  const p=document.createElement("p"); if(cls)p.className=cls===1?"good":cls===2?"bad":"big";
+  p.textContent=txt; const log=$("log"); log.appendChild(p); log.scrollTop=log.scrollHeight;
+}
+function storyNew(label){
+  if(S && Array.isArray(S.storyNew) && !S.storyNew.includes(label)) S.storyNew.push(label);
+}
+function recordMoment(t){
+  if(!meta.story) meta.story=emptyStory();
+  const first=!meta.story.moments[t];
+  meta.story.moments[t]=(meta.story.moments[t]||0)+1;
+  if(first) storyNew(`人间片语：${t}`);
+}
+function recordStoryStep(id, step, branch){
+  if(!meta.story) meta.story=emptyStory();
+  const firstChain=!meta.story.chains[id];
+  const c=meta.story.chains[id]||(meta.story.chains[id]={steps:{},branches:{},endings:{},done:false,visits:0});
+  if(!c.endings||typeof c.endings!=="object") c.endings={};
+  const sk=String(step);
+  const first=!c.steps[sk];
+  c.steps[sk]=1; c.visits=(c.visits||0)+1;
+  if(branch) c.branches[`${sk}:${branch}`]=1;
+  const title=STORY_META[id]?STORY_META[id].title:id;
+  if(firstChain){ const pageGain=2+(talentOwned("cang_1")?1:0); meta.story.pages=(meta.story.pages||0)+pageGain; meta.pity+=pageGain; storyNew(`往事录：初见「${title}」· 得故事残页 ${pageGain}`); }
+  if(first) storyNew(`往事录：${title} · 第${step+1}章`);
+}
+function pushKey(t,w){ if(S) S.keys.push({t,w}); recordMoment(t); }
+function renderLife(){
+  $("stRank").textContent = RANKS[S.rank-1]+"·"+STAGES[S.stage];
+  $("stPow").textContent = Math.floor(S.pow*S.bonus);
+  $("stLife").textContent = `${S.age} / ${Math.max(0,Math.floor(S.lifespan))} 岁`;
+  $("barLife").style.width = Math.max(0,Math.min(100,(1-S.age/S.lifespan)*100))+"%";
+  const T=threshold(S.rank,S.stage);
+  $("stProg").textContent = S.rank===9&&S.stage===3 ? "永生酝酿中" : `${Math.floor(S.prog)} / ${T}`;
+  $("barProg").style.width = Math.min(100,S.prog/T*100)+"%";
+}
+/* ============ 命运抉择 ============ */
+function triggerChoice(ch){
+  if(_ff || S.choiceMode==="auto"){ // 跳过模式或"自动决策"：依人格倾向代选，不暂停
+    const pref=personaPrefKey(ch);
+    const opt = (pref && Math.random()<0.75) ? ch[pref] : (Math.random()<0.5?ch.A:ch.B);
+    const r=opt.f();
+    addLog(`第${S.age}岁，【${ch.t}${S.choiceMode==="auto"?"·自动":""}】${opt.t}：${r}`, 1);
+    pushKey(`命运抉择「${ch.t}」：${opt.t}`, 2);
+    return;
+  }
+  // 正常模式：暂停时间线，等待玩家选择（标记本性所向）
+  clearInterval(timer);
+  renderLife();
+  const pref=personaPrefKey(ch);
+  $("choiceTitle").textContent=`🔮 命运抉择 · ${ch.t}`;
+  $("choiceQ").textContent=ch.q;
+  $("choiceHint").textContent="命运抉择：你的选择将改变这一世的走向";
+  $("choiceA").innerHTML=`${ch.A.t}<small>${ch.A.d}${pref==="A"?" · ✦本性所向":""}</small>`;
+  $("choiceB").innerHTML=`${ch.B.t}<small>${ch.B.d}${pref==="B"?" · ✦本性所向":""}</small>`;
+  $("choiceBox").classList.remove("hide");
+  const pick=(opt)=>{
+    $("choiceBox").classList.add("hide");
+    const r=opt.f();
+    addLog(`第${S.age}岁，【${ch.t}】你选择了「${opt.t}」：${r}`, 1);
+    pushKey(`命运抉择「${ch.t}」：${opt.t}`, 2);
+    if(!finished && !ending){ renderLife(); timer=setInterval(tick, 260/speed); }
+  };
+  $("choiceA").onclick=()=>pick(ch.A);
+  $("choiceB").onclick=()=>pick(ch.B);
+}
+function storyBranchKey(st){
+  const br=st&&st.branch;
+  if(!br) return "";
+  const pref=personaPrefKey({A:br.a,B:br.b});
+  if(S&&S.choiceMode==="auto"&&pref&&Math.random()<0.75) return pref.toLowerCase();
+  return Math.random()<(typeof br.p==="number"?br.p:0.5)?"a":"b";
+}
+function resolveStoryStep(chainId,stepIndex,branchKey,api){
+  if(!S||!S.chain||S.chain.id!==chainId||S.chain.i!==stepIndex) return;
+  const ch=CHAINS[chainId], st=ch.steps[stepIndex];
+  const b=st.branch?(branchKey==="a"?st.branch.a:st.branch.b):null;
+  if(b){
+    addLog("第"+S.age+"岁，【"+ch.t+"】"+b.txt,1);
+    if(b.f) b.f(S,api);
+  }else{
+    addLog("第"+S.age+"岁，【"+ch.t+"】"+st.txt,1);
+    if(st.f) st.f(S,api);
+  }
+  recordStoryStep(chainId,stepIndex,branchKey);
+  const rec=meta.story&&meta.story.chains[chainId];
+  if(st.outcome&&rec){
+    rec.endings[branchKey]=(rec.endings[branchKey]||0)+1;
+    const endTitle=b&&b.t?b.t:(branchKey==="a"?"选择其一":"选择其二");
+    storyNew("往事录："+(STORY_META[chainId]?STORY_META[chainId].title:ch.t)+" · 结局「"+endTitle+"」");
+  }
+  if(st.end || S.chain.i>=ch.steps.length-1){
+    (S.chainsDone||(S.chainsDone={}))[chainId]=1;
+    if(rec){
+      const firstComplete=!rec.done;
+      rec.done=true;
+      meta.story.trail=chainId;
+      if(firstComplete){
+        meta.pity+=5;
+        storyNew("往事录："+(STORY_META[chainId]?STORY_META[chainId].title:chainId)+" · 故事写完，得残念 5");
+        const doneCount=storyStats().done;
+        if(talentOwned("dao_4")&&[6,18,30].includes(doneCount)){meta.pity+=3;storyNew("轮回圆满：第"+doneCount+"条故事写完，额外得残念 3");}
+      }
+      const sm=STORY_META[chainId];
+      if(sm) addLog("第"+S.age+"岁，"+sm.title+"暂告一段落："+sm.hint,1);
+    }
+    S.chain=null;
+  }else{
+    const g=st.gap||[2,4];
+    S.chain.i++;
+    S.chain.at=S.age+g[0]+Math.floor(Math.random()*(g[1]-g[0]+1));
+  }
+}
+function triggerStoryChoice(ch,st,api){
+  const br=st.branch, chainId=S.chain.id, stepIndex=S.chain.i;
+  clearInterval(timer);
+  const pref=personaPrefKey({A:br.a,B:br.b});
+  $("choiceTitle").textContent="📜 故事抉择 · "+ch.t;
+  $("choiceQ").textContent=br.q||"这段往事要往哪里走？";
+  $("choiceHint").textContent="故事分支：这次选择会留下不同的故事结局";
+  $("choiceA").innerHTML=br.a.t+"<small>"+(br.a.d||"")+(pref==="A"?" · ✦本性所向":"")+"</small>";
+  $("choiceB").innerHTML=br.b.t+"<small>"+(br.b.d||"")+(pref==="B"?" · ✦本性所向":"")+"</small>";
+  $("choiceBox").classList.remove("hide");
+  const pick=key=>{
+    $("choiceBox").classList.add("hide");
+    resolveStoryStep(chainId,stepIndex,key,api);
+    if(!finished&&!ending) timer=setInterval(tick,260/speed);
+  };
+  $("choiceA").onclick=()=>pick("a");
+  $("choiceB").onclick=()=>pick("b");
+}
+function tick(){
+  if(finished||ending) return;
+  S.age++;
+  /* 命运抉择触发 */
+  const pc=S.choices.find(x=>!x.done && x.at===S.age);
+  if(pc){ pc.done=true; return triggerChoice(pc.c); }
+  /* 天授永生：任何资质皆有可能，一年约 1/50000（轮回蛊 +50%）—— 一切皆有可能 */
+  if(Math.random()< (1/50000)*(S.gu.c==="轮回"?1.5:1)){
+    return ascendDelay("tianqi", `第${S.age}岁，春秋蝉骤然齐鸣，天道垂青！你以凡骨之身直接证就永生！`, 3000);
+  }
+  /* 逆天改命：温养空窍，资质可缓慢提升（原著依据），每生至多一次，跃升一等 */
+  if(!S.reborn && S.apt.f<2.2 && Math.random()<1/8000){
+    const idx=APTS.indexOf(S.apt);
+    if(idx>=0 && idx<APTS.length-1){
+      S.reborn=true;
+      S.apt=APTS[idx+1];
+      addLog(`第${S.age}岁，多年温养空窍，窍壁底蕴增厚，资质晋升为${S.apt.k==="十绝"?"十绝体！天地为之变色":S.apt.k+"等"}！`, 3);
+      $("lifeName").textContent=`${S.gu.n}（${S.apt.k==="十绝"?"十绝体":S.apt.k+"等"}） · 「${S.persona.n}」（逆天改命）`;
+      pushKey("逆天改命，资质跃升一等", 4);
+    }
+  }
+  const api={
+    add:addLog,
+    gain:yrs=>gainProg(yrs),
+    key:(t,w)=>pushKey(t,w||1)
+  };
+  // 事件 or 修炼（机缘蛊/直觉型人格更易触发事件）
+  const evChance = 0.28 + (S.luckyExtra||0) + (S.gu.c==="机缘"?0.05:0) + (S.persona.J<0?0.04:0);
+  if(Math.random()<Math.min(0.55,evChance)){
+    const ev=wpick(EVENTS,e=>{
+      let w=e.w*personaEventMul(e)*storyEventWeight(e);
+      if(S.gu.c==="机缘"&&e.lucky) w*=2.2;      // 机缘蛊：机缘事件概率大增
+      if(talentOwned("ming_2")&&e.lucky) w*=1.25; // 轮回道树：提高机缘倾向，但不改为必然
+      if(talentOwned("yun_3")&&e.lucky) w*=1.08;
+      if(S.bondBias&&e.t==="道侣情缘") w*=S.bondBias;
+      if(talentOwned("yuan_3")&&e.t==="故人重逢") w*=1.55;
+      if(talentOwned("ming_4")&&["蛹潮来袭","万虫蚀谷","血月当空"].includes(e.t)) w*=1.18;
+      if(S.gu.c==="邪蛊"&&e.dark) w*=1.8;        // 邪蛊：凶险事件更多
+      if(S.path==="邪修"&&e.dark) w*=1.4;        // 邪修：仇家遍地
+      if(S.path==="正道"&&e.dark) w*=0.7;        // 正道：师门庇护
+      return w;
+    });
+    ev.f(S,api);
+  }else{
+    const yrs=0.6+Math.random()*0.9;
+    const g=gainProg(yrs);
+    if(Math.random()<0.18) addLog(`第${S.age}岁，静修一年，战力 +${Math.floor(g)}`);
+  }
+  /* 线性剧情链推进（roguelike） */
+  if(!S.chain && S.storyPull && !S.storyPullUsed && S.age>=12 && S.storyCount<S.storyLimit){
+    const available=storyPickPool().filter(id=>!(S.chainsDone||{})[id]);
+    if(available.length){
+      const id=available[Math.floor(Math.random()*available.length)];
+      S.storyPullUsed=true;
+      addLog("第"+S.age+"岁，红尘深处传来一声旧约——你与一段尚未写完的往事相逢", 1);
+      startChain(S,id);
+    }
+  }
+  if(S.chain && S.age>=S.chain.at){
+    const ch=CHAINS[S.chain.id];
+    const st=ch.steps[S.chain.i];
+    if(st.branch&&st.branch.player&&!_ff&&S.choiceMode==="manual"){
+      triggerStoryChoice(ch,st,api);
+      return;
+    }
+    let branchKey="";
+    if(st.branch){
+      branchKey=st.branch.player?storyBranchKey(st):(Math.random()<st.branch.p?"a":"b");
+      const b=branchKey==="a"?st.branch.a:st.branch.b;
+      addLog(`第${S.age}岁，【${ch.t}】${b.txt}`, 1);
+      if(b.f) b.f(S,api);
+    }else{
+      addLog(`第${S.age}岁，【${ch.t}】${st.txt}`, 1);
+      if(st.f) st.f(S,api);
+    }
+    recordStoryStep(S.chain.id,S.chain.i,branchKey);
+    const storyRec=meta.story&&meta.story.chains[S.chain.id];
+    if(st.outcome&&storyRec){
+      storyRec.endings[branchKey]=(storyRec.endings[branchKey]||0)+1;
+      const chosen=st.branch&&st.branch[branchKey]?st.branch[branchKey].t:(branchKey==="a"?"选择其一":"选择其二");
+      storyNew("往事录："+(STORY_META[S.chain.id]?STORY_META[S.chain.id].title:ch.t)+" · 结局「"+chosen+"」");
+    }
+    if(st.end || S.chain.i>=ch.steps.length-1){
+      (S.chainsDone||(S.chainsDone={}))[S.chain.id]=1;
+      if(meta.story&&meta.story.chains[S.chain.id]){
+        const firstComplete=!meta.story.chains[S.chain.id].done;
+        meta.story.chains[S.chain.id].done=true;
+        meta.story.trail=S.chain.id;
+        if(firstComplete){ meta.pity+=5; storyNew(`往事录：${STORY_META[S.chain.id]?STORY_META[S.chain.id].title:S.chain.id} · 故事写完，得残念 5`); const doneCount=storyStats().done; if(talentOwned("dao_4")&&[6,18,30].includes(doneCount)){meta.pity+=3;storyNew(`轮回圆满：第${doneCount}条故事写完，额外得残念 3`);} }
+        const sm=STORY_META[S.chain.id];
+        storyNew(`往事录：${sm?sm.title:ch.t} · 故事写完`);
+        if(sm) addLog(`第${S.age}岁，${sm.title}暂告一段落：${sm.hint}`, 1);
+      }
+      S.chain=null;
+    }
+    else{
+      const g=st.gap||[2,4];
+      S.chain.i++; S.chain.at=S.age+g[0]+Math.floor(Math.random()*(g[1]-g[0]+1));
+    }
+  }
+  // 突破判定（原著：升转不增寿元；资质决定转数上限，超上限希望渺茫）
+  const T=threshold(S.rank,S.stage);
+  if(S.prog>=T){
+    if(S.stage<3){
+      S.stage++; S.prog=0;
+      addLog(`第${S.age}岁，突破！晋升「${RANKS[S.rank-1]}·${STAGES[S.stage]}」`, 3);
+    }else if(S.rank<9){
+      /* 高境界突破递减；攻伐蛊与正道略有优势 */
+      const base=Math.max(0.15, 0.55-(S.rank-1)*0.045);
+      let ch=Math.min(0.92, base+S.apt.f*0.12+(meta.level-1)*0.008
+        +(S.gu.c==="攻伐"?0.06:0)+(S.path==="正道"?0.04:0)+(S.path==="邪修"?0.02:0)
+        +(S.persona.T>0?0.03:0)); // 思维型（T）：谋定后动，突破率略增
+      if(S.rank+1>S.apt.cap) ch*=0.05; else if(S.rank+1===S.apt.cap) ch*=0.25; // 触及资质上限：侥幸一搏；超上限：希望渺茫
+      if(Math.random()<ch){
+        S.rank++; S.stage=0; S.prog=0;
+        if(S.rank===6){
+          addLog(`第${S.age}岁，蛊仙劫已过！空窍碎而复凝，晋升「六转蛊仙」！生命完成质的升华`, 3);
+          pushKey("渡过蛊仙劫，晋升六转蛊仙", 4);
+        }else{
+          addLog(`第${S.age}岁，水到渠成，晋升「${RANKS[S.rank-1]}」！`, 3);
+          pushKey(`晋升「${RANKS[S.rank-1]}」`, 3);
+        }
+      }else{
+        const keep=Math.max(S.persona.J>0?0.7:0.55,talentOwned("dao_1")?0.68:0);
+        S.prog*=keep; // 判断型人格与稳如磐石：失败后保留更多底蕴
+        const hurt=(S.rank===5)?10:(S.gu.c==="保命"?1:2); // 五转巅峰冲蛊仙失败，大劫反噬
+        S.lifespan-=hurt;
+        addLog(`第${S.age}岁，冲击「${RANKS[S.rank]}」失败，真元紊乱${hurt>=10?"，蛊仙劫反噬，重伤垂死":""}，寿元 -${hurt}`, 2);
+      }
+    }else{
+      // 九转蛊仙巅峰 → 冲击永生：古往今来无人做到，失败即身陨
+      S.prog=0;
+      const ch=0.02+S.apt.f*0.008+(meta.level-1)*0.0002+(talentOwned("dao_2")?0.003:0)+(talentOwned("yun_4")?0.002:0);
+      if(Math.random()<ch){ return ascendDelay("dukai", `第${S.age}岁，万蛊朝拜，天道让路——你叩开了永生之门！`, 3000); }
+      return endLife("zuisu");
+    }
+  }
+  renderLife();
+  if(S.age>=S.lifespan){
+    /* 蛊仙寿元将尽：转仙僵变相延寿，一生一次（原著设定） */
+    if(S.rank>=6 && !S.jiangOnce){
+      S.jiangOnce=true; S.lifespan+=25;
+      addLog(`第${S.age}岁，寿元将尽，你咬牙转入仙僵之道——不生不死，再苟延 25 年`, 2);
+      pushKey("转为仙僵，变相延寿", 3);
+      renderLife(); return;
+    }
+    /* 保命蛊：濒死燃身护主，一生一次 */
+    if(S.gu.c==="保命" && !S.savedOnce){
+      S.savedOnce=true; S.lifespan+=8;
+      addLog(`第${S.age}岁，油尽灯枯之际，本命蛊「${S.gu.n}」燃烧自身护主！重焕生机，寿元 +8`, 3);
+      pushKey("濒死保命：本命蛊燃身护主", 3);
+      renderLife(); return;
+    }
+    if(S.rank>=8) return endLife("jiuzhuan");
+    if(S.path==="邪修"&&S.rank>=7) return endLife("mozun");
+    if(S.path==="正道"&&S.rank>=7) return endLife("zongshi");
+    if(S.spouse && (S.daoHeart||0)>=2 && S.rank>=4) return endLife("daolv");
+    if(S.rank>=5) return endLife("qiangzhe");
+    if(S.rank>=3) return endLife("xiaocheng");
+    return endLife(S.age<18?"yaozhe":"fanfu");
+  }
+}
+function fastForward(){
+  let guard=0;
+  _ff=true;
+  $("choiceBox").classList.add("hide");
+  while(!finished && !ending && guard++<3000) tick();
+  _ff=false;
+}
+/* ============ 战报与结算 ============ */
+function topKeys(){
+  if(!S) return [];
+  return S.keys.map((k,i)=>({k,i})).sort((a,b)=>b.k.w-a.k.w||a.i-b.i).slice(0,3).sort((a,b)=>a.i-b.i).map(x=>x.k.t);
+}
+function nextGoal(){
+  for(const k of GOAL_ORDER){ if(!meta.codexEnd[k]) return `解锁「${ENDINGS[k].n}」：${ENDINGS[k].h}`; }
+  return "结局图鉴已集齐，静待新篇章";
+}
+function buildReport(eKey){
+  const e=ENDINGS[eKey];
+  const lines=[];
+  lines.push(`资质 ${S.apt.k==="十绝"?"十绝体":S.apt.k+"等"} · 本命蛊「${S.gu.n}」（${S.gu.r}·${S.gu.c}）`);
+  lines.push(`道心人格「${S.persona.n}」${S.persona.k} · 终境 ${RANKS[S.rank-1]} · 享年 ${S.age} 岁${S.path!=="散修"?` · 道途「${S.path}」`:""}`);
+  lines.push(`结局「${e.n}」· 稀有度：${e.r}`);
+  const keys=topKeys();
+  if(keys.length){ lines.push("关键经历："); keys.forEach(t=>lines.push(`· ${t}`)); }
+  lines.push(`图鉴：命蛊 ${Object.keys(meta.codexGu).length}/${GUS.length} · 结局 ${Object.keys(meta.codexEnd).length}/${Object.keys(ENDINGS).length}`);
+  const ss=storyStats();
+  lines.push(`往事录：${ss.done}/${Object.keys(STORY_META).length} 条故事写完 · ${ss.found} 条已遇见 · ${ss.branches} 个分支`);
+  if(meta.equippedTitle) lines.push(`道号：${meta.equippedTitle}`);
+  lines.push(`下一目标：${nextGoal()}`);
+  return lines.join("\n");
+}
+function buildShareText(eKey){
+  const e=ENDINGS[eKey];
+  const arr=["【命蛊转世模拟器】一世战报"];
+  buildReport(eKey).split("\n").forEach(l=>arr.push(l));
+  return arr.join("\n");
+}
+function spouseDeathEcho(key, death){
+  /* 道侣只在确实能相守的室内/家园场景出现；雪山、战场、飞升等文本保持自己的孤独感。 */
+  if(!S || !S.spouse || !["fanfu","xiaocheng","zongshi"].includes(key)) return "";
+  if(/雪|冻|山那边|采药|战|剑|雷|灰烬|化光|远方|魔殿|城头|坟|蛊卵|飞舟/.test(death)) return "";
+  if(!/床|榻|院|屋|窗|家人|弟子|灯|村|门槛|案头/.test(death)) return "";
+  const tails={
+    fanfu:"道侣坐在床边，等那盏灯烧尽，才替你合上窗。",
+    xiaocheng:"道侣站在弟子身后，没有哭，只把你留下的手札收好。",
+    zongshi:"道侣在人群最后面合掌，等钟声停了，才轻轻叫了一声你的名字。"
+  };
+  return tails[key]||"";
+}
+function newArchiveId(){ return `run-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,8)}`; }
+function collectRunLines(){
+  return Array.from($("log").children).map(p=>({text:p.textContent||"",cls:p.classList.contains("good")?"good":p.classList.contains("bad")?"bad":p.classList.contains("big")?"big":""}));
+}
+function storeArchive(archive){
+  if(!meta.archives) meta.archives=[];
+  meta.archives.unshift(archive);
+  while(meta.archives.length>ARCHIVE_LIMIT){
+    let removeAt=meta.archives.length-1;
+    for(let i=meta.archives.length-1;i>=0;i--){
+      if(meta.archives[i].key!=="dukai"&&meta.archives[i].key!=="tianqi"){ removeAt=i; break; }
+    }
+    meta.archives.splice(removeAt,1);
+  }
+}
+function buildArchive(key,e,report,archiveId){
+  const log=collectRunLines();
+  return {
+    id:archiveId||newArchiveId(), t:Date.now(), key, ending:e.n,
+    apt:S.apt.k, gu:S.gu.n, persona:S.persona.n, personaKey:S.persona.k,
+    path:S.path, age:S.age, rank:S.rank, stage:S.stage, lifespan:S.lifespan,
+    reborn:!!S.reborn, spouse:!!S.spouse, daoHeart:S.daoHeart||0, choiceMode:S.choiceMode||choiceMode(),
+    choices:S.keys.filter(x=>x.t.indexOf("命运抉择")===0).map(x=>x.t), choicePlan:(S.choices||[]).map(x=>({t:String(x.c&&x.c.t||""),age:Number(x.at)||0,done:!!x.done})), chainsDone:S.chainsDone||{}, storyNew:S.storyNew||[],
+    keys:S.keys.slice(), log, highlights:log.filter(x=>x.cls==="good"||x.cls==="big"), report, quote:""
+  };
+}
+function captureBond(){
+  if(!S) return;
+  let type="", pool=[];
+  if(S.spouse){ type="道侣"; pool=BOND_NAMES.道侣; }
+  else if((S.keys||[]).some(x=>/宿敌/.test(x.t))){ type="宿敌"; pool=BOND_NAMES.宿敌; }
+  else if((S.keys||[]).some(x=>/边荒|同袍|老卒|遗孤/.test(x.t))){ type="同袍"; pool=BOND_NAMES.同袍; }
+  if(!type) return;
+  const used=new Set((meta.bonds||[]).filter(b=>b.type===type).map(b=>b.name));
+  const name=pool.find(x=>!used.has(x))||pool[(meta.runs+pool.length)%pool.length];
+  let b=(meta.bonds||[]).find(x=>x.type===type&&x.name===name);
+  if(!b){ b={id:`${type}-${name}`,name,type,origin:(S.keys||[]).slice(-1).map(x=>x.t).join("；").slice(0,120),level:0,visits:0,last:""}; meta.bonds.unshift(b); if(meta.bonds.length>8) meta.bonds.length=8; storyNew(`牵挂名录：记下${type}「${name}」`); }
+  b.visits=(b.visits||0)+1;
+}
+function updateAchievements(){
+  if(!meta.achievements) meta.achievements={}; if(!meta.titles) meta.titles={};
+  ACHIEVEMENTS.forEach(a=>{
+    if(meta.achievements[a.id]) return;
+    const p=a.progress(); if(p[0]>=p[1]){
+      meta.achievements[a.id]=true; meta.titles[a.id]=a.title; meta.pity+=a.reward||0;
+      if(!meta.equippedTitle) meta.equippedTitle=a.title;
+      storyNew(`道号成就：${a.title}`);
+    }
+  });
+}
+function endLife(key){
+  finished=true; ending=false; clearInterval(timer);
+  if(key==="tianqi") S.rank=Math.max(S.rank,9);   // 天授永生按九转结算
+  const e=ENDINGS[key];
+  meta.codexEnd[key]=true;
+  const mul = S.gu.c==="轮回"?1.2:1;
+  const expGain = Math.floor((S.rank*S.rank*8 + S.age*0.5)*mul);
+  const pityBase = Math.floor((8 + S.rank*2 + (key==="dukai"||key==="tianqi"?20:0))*mul) + Object.keys(meta.codexEnd).length*2;
+  const pityBonus = talentOwned("ming_3")&&S.age<18 ? Math.floor(pityBase*0.5) : 0;
+  const pityGain = pityBase+pityBonus;
+  meta.exp += expGain; meta.pity += pityGain;
+  meta.codexGu[S.gu.n]=true;
+  meta.codexPath[S.path||"散修"]=true;
+  const immortal=(key==="dukai"||key==="tianqi");
+  const archiveId=immortal?newArchiveId():"";
+  // 永生殿堂：证得永生即录入本地神位 + 上报全网
+  if(immortal){
+    meta.hall.unshift({
+      t: Date.now(), mode: key,
+      apt: S.apt.k, gu: S.gu.n, age: S.age,
+      reborn: !!S.reborn, quote: "", archiveId
+    });
+    if(meta.hall.length>200) meta.hall.length=200;
+    pendingAscend={key, apt:S.apt.k, gu:S.gu.n, age:S.age, archiveId};
+  }
+  /* 临终交代：最后是怎么死的 */
+  const dArr=DEATHS[key]||[];
+  if(dArr.length){
+    const deathIndex=Math.floor(Math.random()*dArr.length);
+    let death=dArr[deathIndex](S);
+    death=death.split("【境】").join(RANKS[S.rank-1]);
+    let noTouch=false;
+    if(death.endsWith("⟂")){ noTouch=true; death=death.slice(0,-1); }  // 溶解型死亡（化虹/封山等），身体已不在，不接握手/仇家后缀
+    if(key!=="daolv"&&key!=="dukai"&&key!=="tianqi"&&key!=="zuisu"&&!noTouch){
+      const spouseEcho=spouseDeathEcho(key,death);
+      if(spouseEcho) death+=spouseEcho;
+      else if(!S.spouse && S.path==="邪修") death+="仇家的名字，你还记得几个。";
+    }
+    if(!meta.codexDeath[key]) meta.codexDeath[key]=[];
+    const firstDeath=!meta.codexDeath[key].includes(death);
+    if(firstDeath) meta.codexDeath[key].push(death);
+    if(firstDeath&&talentOwned("cang_4")){meta.pity+=2;storyNew(`临终簿：首次读到「${e.n}」的新句，得残念 2`);}
+    addLog(death, 3);
+  }
+  captureBond();
+  updateAchievements();
+  pushKey(`结局「${e.n}」`, 5);
+  // 保存本世记录供回顾（全记录 + 高光）
+  lastRunLog = $("log").innerHTML;
+  lastRunHi = Array.from($("log").children)
+    .filter(p=>p.classList.contains("good")||p.classList.contains("big"))
+    .map(p=>p.outerHTML).join("");
+  lastRunTitle = `${ENDINGS[key].n} · 命蛊「${S.gu.n}」·「${S.persona.n}」· 享年 ${S.age} 岁`;
+  // 战报卡
+  lastReportText = buildShareText(key);
+  if(immortal){
+    const archive=buildArchive(key,e,lastReportText,archiveId);
+    storeArchive(archive);
+    if(meta.hall[0]&&meta.hall[0].archiveId===archiveId) meta.hall[0].archiveId=archive.id;
+  }
+  $("repBody").textContent = buildReport(key);
+  // 升级
+  while(meta.exp>=levelExp(meta.level)){ meta.exp-=levelExp(meta.level); meta.level++; }
+  save();
+  $("resEnding").textContent=e.n;
+  const rt=$("resRarity"); rt.textContent=e.r; rt.className="rtag rt-"+e.r; rt.classList.remove("hide");
+  $("resDetail").textContent=`${e.d} —— 命蛊「${S.gu.n}」·${S.apt.k}等资质，终境「${RANKS[S.rank-1]}」，享年 ${S.age} 岁${S.path!=="散修"?`，道途「${S.path}」`:""}`;
+  $("resExp").textContent="+"+expGain;
+  $("resPity").textContent="+"+pityGain;
+  const fresh=(S.storyNew||[]).slice(0,6);
+  $("storyDiscoveries").classList.toggle("hide",fresh.length===0);
+  $("storyNewList").innerHTML=fresh.map(x=>`<div>· ${escapeHTML(x)}</div>`).join("");
+  if(pendingAscend){
+    $("quoteInput").value=""; $("quoteCnt").textContent="0/200";
+    $("quoteBox").classList.remove("hide");
+  }else{
+    $("quoteBox").classList.add("hide");
+  }
+  show("result");
+}
+
+/* ============ 图鉴 ============ */
+function storyStats(){
+  const records=meta.story&&meta.story.chains||{};
+  const found=Object.keys(records).filter(id=>records[id]&&Object.keys(records[id].steps||{}).length).length;
+  const done=Object.values(records).filter(x=>x&&x.done).length;
+  const branches=Object.values(records).reduce((n,x)=>n+Object.keys(x&&x.branches||{}).length,0);
+  return {found,done,branches,moments:Object.keys(meta.story&&meta.story.moments||{}).length};
+}
+function storyExcerpts(id,r){
+  if(!r) return [];
+  const ch=CHAINS[id]; if(!ch) return [];
+  const out=[];
+  Object.keys(r.steps||{}).sort((a,b)=>+a-+b).forEach(sk=>{
+    const st=ch.steps[+sk]; if(!st) return;
+    if(st.branch){
+      ["a","b"].forEach(k=>{ if(r.branches&&r.branches[`${sk}:${k}`]&&st.branch[k]) out.push(st.branch[k].txt); });
+    }else if(st.txt) out.push(st.txt);
+  });
+  return out.slice(0,8);
+}
+function renderStoryCodex(){
+  const st=storyStats();
+  const total=Object.keys(STORY_META).length;
+  $("codexStoryCount").textContent=`往事录：${st.done}/${total} 条故事写完 · ${st.found} 条已遇见 · ${st.branches} 个分支 · ${st.moments} 句人间片语`;
+  const next=st.found<6?"先去听见六种不同的风声":st.found<18?"已有半卷故事落入手中，顺着相连的名字继续走":st.found<total?"三十条故事已见大半，尚有几段余韵等待回收":"你已阅尽这片人间，仍有些故事选择保持沉默";
+  $("codexStoryProgress").textContent=`故事残页 ${meta.story&&meta.story.pages||0} · 下一步：${next}。完成一条故事后，相关联的未完故事会获得轻微引导。`;
+  $("storyWorldIntro").textContent=STORY_WORLD_INTRO;
+  $("codexStory").innerHTML=Object.entries(STORY_META).map(([id,m])=>{
+    const r=meta.story&&meta.story.chains&&meta.story.chains[id];
+    const seen=!!(r&&Object.keys(r.steps||{}).length);
+    const steps=r?Object.keys(r.steps||{}).length:0;
+    const branches=r?Object.keys(r.branches||{}).length:0;
+    const endings=r?Object.keys(r.endings||{}).length:0;
+    const totalSteps=CHAINS[id]?CHAINS[id].steps.length:5;
+    const links=m.links.map(x=>STORY_META[x]?STORY_META[x].title:x).join(" · ");
+    const title=seen?m.title:"？？？ 未曾听闻";
+    const body=seen?`${m.theme}。${m.hint}`:"这一段往事还没有落到你的脚边。下一世，也许从一场雨、一道剑鸣或一封迟到的信开始。";
+    const excerpts=storyExcerpts(id,r);
+    const pages=excerpts.length?`<div class="storyEcho">已读片段：${excerpts.map(x=>escapeHTML(x)).join("<br>")}</div>`:"";
+    const echo=r&&r.done?`<div class="storyEcho">余韵：${m.echo}</div>`:"";
+    return `<div class="storyCard ${seen?"":"locked"}"><div class="storyTitle">${seen?"📜":"▫"} ${title}${r&&r.done?" · 已写完":""}</div><div class="storyMeta">章节 ${steps}/${totalSteps} · 分支 ${branches}/4 · 结局 ${endings}/2 · 相连：${seen?links:"？？？"}</div><div class="storyMeta">${body}</div>${pages}${echo}</div>`;
+  }).join("");
+  const moments=Object.entries(meta.story&&meta.story.moments||{}).sort((a,b)=>b[1]-a[1]).slice(0,18);
+  $("codexMoments").innerHTML=moments.length?moments.map(([t,n])=>`<div class="codexItem">${escapeHTML(t)}<span class="tag">${n}次</span></div>`).join(""):"<div class=\"codexItem locked\">还没有片语落入往事录。每一世都会留下东西，只是有些要等你回头才看见。</div>";
+}
+function renderTalentPane(scope){
+  scope=scope==="meta"?"meta":"codex";
+  const ids=scope==="meta"?{summary:"metaSummary",talent:"metaTalent",reset:"btnResetTalentsStandalone"}:{summary:"codexMetaSummary",talent:"codexTalent",reset:"btnResetTalents"};
+  const summaryEl=$(ids.summary), talentEl=$(ids.talent), resetEl=$(ids.reset);
+  if(!summaryEl||!talentEl) return;
+  const total=TALENT_IDS.length, owned=TALENT_IDS.filter(talentOwned).length, spent=talentSpent();
+  summaryEl.textContent="轮回残念 "+meta.pity+" · 永久天赋 "+owned+"/"+total+" · 已投入 "+spent+" 点 · 故事 "+storyStats().found+"/"+Object.keys(STORY_META).length+" · 牵挂 "+(meta.bonds?meta.bonds.length:0)+" · 道号 "+Object.keys(meta.titles||{}).length;
+  talentEl.innerHTML=TALENT_TREES.map(tree=>{
+    const cards=tree.talents.map(t=>{
+      const own=talentOwned(t.id), ready=!t.requires||talentOwned(t.requires), can=!own&&ready&&meta.pity>=t.cost;
+      const action=own?"<span>已点亮 · 永久生效</span>":(!ready?"<span>需先点亮上一层</span>":"<button data-talent-id=\""+t.id+"\" "+(can?"":"disabled")+">"+(can?"消耗 "+t.cost+" 点":"残念不足")+"</button>");
+      return "<div class=\"talentCard "+(own?"on":(!ready?"locked":""))+"\"><div class=\"talentName\">"+(own?"✦ ":"")+t.name+" <span class=\"tag\">第"+t.tier+"层</span></div><div class=\"talentDesc\">"+t.desc+"</div><div class=\"talentCost\"><span>永久天赋</span>"+action+"</div></div>";
+    }).join("");
+    return "<div class=\"talentTree\"><div class=\"talentTreeHead\"><span>"+tree.icon+" "+tree.name+"道</span><small>"+tree.desc+"</small></div>"+cards+"</div>";
+  }).join("");
+  document.querySelectorAll("[data-talent-id]").forEach(b=>{ b.onclick=()=>buyTalent(b.dataset.talentId); });
+  if(resetEl){
+    resetEl.disabled=spent===0;
+    resetEl.textContent=spent?"洗去已点天赋（返还 "+Math.floor(spent*.8)+" 点残念）":"暂无已点亮天赋";
+  }
+}
+function buyTalent(id){
+  const t=talentById(id);
+  if(!t||talentOwned(id)|| (t.requires&&!talentOwned(t.requires)) || meta.pity<t.cost) return;
+  meta.pity-=t.cost;
+  if(!meta.talents) meta.talents={};
+  meta.talents[id]=true;
+  save(); renderMeta(); renderCodex(); renderStandaloneMeta();
+}
+function resetTalents(){
+  const spent=talentSpent();
+  if(!spent) return;
+  const refund=Math.floor(spent*.8);
+  if(!confirm("确定洗去全部永久天赋吗？将返还 "+refund+" 点轮回残念。")) return;
+  meta.pity+=refund; meta.talents={}; save(); renderMeta(); renderCodex(); renderStandaloneMeta();
+}
+function renderMetaCodex(scope){
+  scope=scope==="meta"?"meta":"codex";
+  const ids=scope==="meta"?{people:"metaPeople",bonds:"metaBonds",achievements:"metaAchievements",death:"metaDeath"}:{people:"codexPeople",bonds:"codexBonds",achievements:"codexAchievements",death:"codexDeath"};
+  const put=(id,html)=>{const el=$(id); if(el) el.innerHTML=html;};
+  const aptItems=APTS.map(a=>"<div class=\"codexItem "+(meta.codexApt[a.k]?"":"locked")+"\"><span class=\"tag\">"+(meta.codexApt[a.k]?"已见":"未见")+"</span>"+(meta.codexApt[a.k]?(a.k==="十绝"?"十绝体":a.k+"等")+" · "+APT_DESC[a.k]:"？？？ 未觉醒该资质")+"</div>").join("");
+  const personaItems=PERSONA_KEYS.map(k=>"<div class=\"codexItem "+(meta.codexPersona[k]?"":"locked")+"\"><span class=\"tag\">"+(meta.codexPersona[k]?"已见":"未见")+"</span>"+(meta.codexPersona[k]?"「"+PERSONA_NAMES[k]+"」 "+k:"？？？ "+k)+"</div>").join("");
+  const paths=["散修","正道","邪修"].map(p=>"<div class=\"codexItem "+(meta.codexPath[p]?"":"locked")+"\"><span class=\"tag\">"+(meta.codexPath[p]?"已走":"未走")+"</span>"+p+"道途</div>").join("");
+  put(ids.people,"<div class=\"small\">资质 · "+Object.keys(meta.codexApt).length+"/"+APTS.length+"</div><div class=\"codexGrid\">"+aptItems+"</div><div class=\"small\" style=\"margin-top:10px\">人格 · "+Object.keys(meta.codexPersona).length+"/"+PERSONA_KEYS.length+"</div><div class=\"codexGrid\">"+personaItems+"</div><div class=\"small\" style=\"margin-top:10px\">道途 · "+Object.keys(meta.codexPath).length+"/3</div><div class=\"codexGrid\">"+paths+"</div>");
+  put(ids.bonds,meta.bonds&&meta.bonds.length?meta.bonds.map(b=>`<div class="codexItem"><span class="tag">羁绊 ${b.level}/3 · ${b.visits||0}次</span>「${escapeHTML(b.name)}」· ${escapeHTML(b.type)}<div class="storyMeta">${escapeHTML(b.last||b.origin||"这一世还没有留下可辨认的片段")}</div></div>`).join(""):"<div class=\"codexItem locked\">还没有人被你带过轮回。道侣、宿敌或并肩守过一夜的人，都可能在下一世换一个名字回来。</div>");
+  put(ids.achievements,ACHIEVEMENTS.map(a=>{const p=a.progress(),got=!!(meta.achievements&&meta.achievements[a.id]);return `<div class="codexItem ${got?"":"locked"}"><span class="tag">${got?"已得":p[0]+"/"+p[1]}</span>${got?"「"+escapeHTML(a.title)+"」":"未成道号"}<div class="storyMeta">${escapeHTML(a.desc)}${got&&meta.equippedTitle===a.title?" · 当前佩戴":""}</div>${got?`<button class="archiveBtn" data-title-id="${a.id}">${meta.equippedTitle===a.title?"已佩戴":"佩戴道号"}</button>`:""}</div>`;}).join(""));
+  document.querySelectorAll("[data-title-id]").forEach(b=>{b.onclick=()=>equipTitle(b.dataset.titleId);});
+  put(ids.death,Object.entries(ENDINGS).map(([k,e])=>{
+    const seen=meta.codexDeath[k]||[], total=(DEATHS[k]||[]).length;
+    const lines=seen.slice(0,3).map(x=>"<div class=\"codexDeathText\">"+escapeHTML(x)+"</div>").join("");
+    return "<div class=\"codexItem "+(seen.length?"":"locked")+"\"><span class=\"tag\">"+seen.length+"/"+total+"</span>"+e.n+(seen.length?" · 已读临终文本":" · 尚未读到")+lines+"</div>";
+  }).join(""));
+}
+function renderStandaloneMeta(){ renderTalentPane("meta"); renderMetaCodex("meta"); }
+function equipTitle(id){ const a=ACHIEVEMENTS.find(x=>x.id===id); if(!a||!meta.titles||!meta.titles[id]) return; meta.equippedTitle=a.title; save(); renderMeta(); renderCodex(); renderStandaloneMeta(); }
+function setCodexTab(tab){
+  document.querySelectorAll("#codexTabs [data-codex-tab]").forEach(b=>b.classList.toggle("on",b.dataset.codexTab===tab));
+  $("codexPaneGu").classList.toggle("hide",tab!=="gu");
+  $("codexPaneEnd").classList.toggle("hide",tab!=="end");
+  $("codexPaneStory").classList.toggle("hide",tab!=="story");
+  $("codexPaneMeta").classList.toggle("hide",tab!=="meta");
+}
+function renderCodex(){
+  $("codexGuCount").textContent=`${Object.keys(meta.codexGu).length}/${GUS.length}`;
+  const guSummary=Object.keys(GCLS).map(c=>c+" "+GUS.filter(g=>g.c===c&&meta.codexGu[g.n]).length+"/"+GUS.filter(g=>g.c===c).length).join(" · ");
+  $("codexGuSummary").textContent="流派完成度："+guSummary;
+  $("codexGu").innerHTML=GUS.map(g=>{
+    const got=meta.codexGu[g.n];
+    return `<div class="codexItem ${got?"":"locked"}"><span class="tag rar-${g.r}">${g.r}·${g.c}</span>${got?`「${g.n}」 ${g.d}`:"？？？ 未觉醒"}</div>`;
+  }).join("");
+  $("codexEndCount").textContent=`${Object.keys(meta.codexEnd).length}/${Object.keys(ENDINGS).length}`;
+  $("codexEnd").innerHTML=Object.entries(ENDINGS).map(([k,e])=>{
+    const got=meta.codexEnd[k];
+    return `<div class="codexItem ${got?"":"locked"}"><span class="tag">${e.r}</span>${got?`「${e.n}」 ${e.d}`:`？？？ ${e.h}`}</div>`;
+  }).join("");
+  renderStoryCodex();
+  renderTalentPane();
+  renderMetaCodex();
+}
+
+/* ============ 网络层 ============ */
+/* 服务端地址：?api= 参数 > localStorage("api_base")。国内静态发布版默认单机，避免等待不可达的跨境接口。 */
+const DEFAULT_API = "";
+const _apiParam = new URLSearchParams(location.search).get("api") || localStorage.getItem("api_base") || DEFAULT_API;
+const API_BASE = _apiParam.replace(/\/+$/,"");
+let currentRunId="";
+const APT_KEYS = ["F","E","D","C","B","A","S","SS","SSS"];
+function dao(){
+  if(!meta.dao){
+    const pre=["青玄","白鹿","云隐","听雷","抱朴","归墟","凌霄","煮石","衔烛","洗剑","醉月","枯荣"];
+    meta.dao = pre[Math.floor(Math.random()*pre.length)]+"子·"+String(1000+Math.floor(Math.random()*9000));
+    save();
+  }
+  return meta.dao;
+}
+async function apiGet(p){
+  if(!API_BASE) return null;
+  try{
+    const c=new AbortController(); const t=setTimeout(()=>c.abort(),3000);
+    const r=await fetch(API_BASE+p,{signal:c.signal});
+    clearTimeout(t);
+    return r.ok ? await r.json() : null;
+  }catch(e){ return null; }
+}
+async function apiPost(p,d){
+  if(!API_BASE) return null;
+  try{
+    const c=new AbortController(); const t=setTimeout(()=>c.abort(),3000);
+    const r=await fetch(API_BASE+p,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(d),signal:c.signal});
+    clearTimeout(t);
+    return r.ok ? await r.json() : null;
+  }catch(e){ return null; }
+}
+async function loadGlobal(){
+  const el=$("globalLine");
+  if(window.__apiDown){ el.textContent="🌐 天道网络暂未连接，本局仍可正常游玩。"; return; }
+  if(!API_BASE){ el.textContent="🌐 单机转世中：进度会保存在当前浏览器。全网永生榜将在联网版开放。"; return; }
+  const s=await apiGet("/stats");
+  if(s){ el.textContent = `🌐 全网已有 ${s.totalRuns} 位蛊师转世 · 共 ${s.totalAscended} 位证得永生 · 今日 ${s.todayAscended} 位天授永生`; }
+  else{ window.__apiDown=true; el.textContent="🌐 天道网络暂未连接，本局仍可正常游玩。"; }
+}
+function reportAscend(key, quote){
+  const p = pendingAscend || {apt:(S&&S.apt.k), gu:(S&&S.gu.n), age:(S&&S.age)};
+  apiPost("/ascend",{dao:dao(),mode:key,apt:p.apt,gu:p.gu,age:p.age,quote:quote||"",runId:currentRunId});
+}
+let pendingAscend=null;
+function cleanQuote(s){
+  return String(s||"").replace(/[\u0000-\u001f]/g," ").replace(/\s+/g," ").trim().slice(0,200);
+}
+function sendQuote(){
+  if(!pendingAscend) return;
+  const txt=cleanQuote($("quoteInput").value);
+  if(meta.hall[0]) meta.hall[0].quote=txt;
+  const archive=meta.archives&&meta.archives.find(a=>a.id===pendingAscend.archiveId);
+  if(archive) archive.quote=txt;
+  save();
+  reportAscend(pendingAscend.key, txt);
+  pendingAscend=null;
+  $("quoteBox").classList.add("hide");
+}
+$("btnQuoteSend").onclick=()=>sendQuote();
+$("btnQuoteSkip").onclick=()=>sendQuote();
+$("quoteInput").oninput=function(){ $("quoteCnt").textContent=Math.min(200,this.value.length)+"/200"; };
+function voterId(){
+  let v=localStorage.getItem("mingu_voter_id");
+  if(!v){ v="v-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,10); localStorage.setItem("mingu_voter_id",v); }
+  return v;
+}
+function votedMap(){
+  try{ return JSON.parse(localStorage.getItem("mingu_voted")||"{}"); }catch(e){ return {}; }
+}
+async function vote(cid, v){
+  const m=votedMap();
+  if(m[cid]) return;
+  m[cid]=v; localStorage.setItem("mingu_voted", JSON.stringify(m));
+  const r=await apiPost("/vote",{id:cid, voter:voterId(), v});
+  if(!r || !r.ok){ delete m[cid]; localStorage.setItem("mingu_voted", JSON.stringify(m)); }
+  renderNetHall();
+}
+function reportRun(){
+  currentRunId=(globalThis.crypto&&globalThis.crypto.randomUUID)?globalThis.crypto.randomUUID():"r-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2);
+  apiPost("/run",{dao:dao(),runId:currentRunId});
+}
+
+/* ============ 永生殿堂 & 回顾 ============ */
+function escapeHTML(value){
+  return String(value).replace(/[&<>"']/g, ch=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[ch]));
+}
+function renderHall(){
+  const n=meta.hall.length;
+  $("daoTag").textContent="道号："+dao()+"（点击改名）";
+  const archiveCount=meta.archives?meta.archives.length:0;
+  $("hallSummary").textContent = n
+    ? `本地共 ${n} 次证得永生 · 天授 ${meta.hall.filter(r=>r.mode==="tianqi").length} 次 / 渡永生劫 ${meta.hall.filter(r=>r.mode==="dukai").length} 次 · 完整档案 ${archiveCount} 份`
+    : "殿堂尚且空空——还没有蛊仙证得永生。下一个传说，会是你吗？";
+  $("hallList").innerHTML = n ? meta.hall.map(r=>{
+    const mode = r.mode==="tianqi" ? "⚡ 天授永生" : "🕯 证得永生";
+    const d = new Date(r.t);
+    const ds = `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;
+    const archiveBtn=r.archiveId?`<button class="archiveBtn" data-archive-id="${escapeHTML(r.archiveId)}">📜 查看人生档案</button>`:"";
+    return `<div class="codexItem"><span class="tag rar-仙">${ds}</span>${mode} · ${escapeHTML(r.apt)}等资质 · 「${escapeHTML(r.gu)}」 · 享年 ${escapeHTML(r.age)} 岁${r.reborn?" · 逆天改命":""}${r.quote?`<br><span style="color:var(--gold)">🕊 ${escapeHTML(r.quote)}</span>`:""}<br>${archiveBtn}</div>`;
+  }).join("") : "";
+  document.querySelectorAll("[data-archive-id]").forEach(b=>{ b.onclick=()=>openArchive(b.dataset.archiveId); });
+}
+async function renderNetHall(){
+  const el=$("hallNet");
+  if(!API_BASE){ el.innerHTML='<div class="codexItem locked">未接入服务端：部署 prototype/server 后，页面地址加 ?api=服务端地址 即可查看全网神榜。</div>'; return; }
+  el.innerHTML='<div class="codexItem locked">正在查询天道网络……</div>';
+  const r=await apiGet("/hall?limit=50");
+  if(!r||!r.list){ el.innerHTML='<div class="codexItem locked">天道网络连接失败，稍后再试。</div>'; return; }
+  el.innerHTML = r.list.length
+    ? r.list.map((x,i)=>{
+        const mode = x.mode==="tianqi" ? "⚡" : "🕯";
+        const d=new Date(x.t);
+        const ds=`${d.getMonth()+1}/${d.getDate()}`;
+        return `<div class="hallItem"><span>#${i+1} <span class="who">${escapeHTML(x.dao)}</span> · ${escapeHTML(x.apt)}级 · 「${escapeHTML(x.gu)}」 · ${escapeHTML(x.age)}岁</span><span class="tag rar-仙">${mode}${ds}</span></div>${x.quote?`<div class="codexItem" style="border-style:dashed"><span style="color:var(--gold)">🕊 ${escapeHTML(x.quote)}</span></div>`:""}<div style="text-align:right;margin-top:-2px"><span class="vbtn${votedMap()[x.id]?" off":""}" onclick="vote(${x.id},1)">👍 ${x.up||0}</span><span class="vbtn${votedMap()[x.id]?" off":""}" onclick="vote(${x.id},-1)">👎 ${x.down||0}</span></div>`;
+      }).join("")
+    : '<div class="codexItem locked">全网还没有蛊仙证得永生——第一个走到终点的可能就是你！</div>';
+}
+$("btnHall").onclick=()=>{ renderHall(); renderNetHall(); $("hallModal").classList.remove("hide"); };
+$("btnCloseHall").onclick=()=>$("hallModal").classList.add("hide");
+$("daoTag").onclick=()=>{
+  const name=prompt("给自己取个道号（2-12字）：", dao());
+  if(name && name.trim()){ meta.dao=name.trim().slice(0,12); save(); renderHall(); renderNetHall(); }
+};
+document.querySelectorAll("#hallModal .tab").forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll("#hallModal .tab").forEach(x=>x.classList.toggle("on",x===b));
+    $("hallLocal").classList.toggle("hide",b.dataset.tab!=="local");
+    $("hallNet").classList.toggle("hide",b.dataset.tab!=="net");
+  };
+});
+let reviewArchive=null;
+function archiveLinesHTML(lines){
+  return (lines||[]).map(x=>`<p class="${x.cls||""}">${escapeHTML(x.text||"")}</p>`).join("")||"<p style=\"color:#8a8172\">（这一世没有留下文字记录）</p>";
+}
+function openArchive(id){
+  const archive=meta.archives&&meta.archives.find(a=>a.id===id);
+  if(!archive) return;
+  reviewArchive=archive;
+  $("reviewTitle").textContent="📜 永生人生档案 · "+archive.ending;
+  const planned=archive.choicePlan&&archive.choicePlan.length?archive.choicePlan.length:archive.choices.length;
+  $("reviewMeta").textContent=`${archive.apt==="十绝"?"十绝体":archive.apt+"等"} · 命蛊「${archive.gu}」 · 人格「${archive.persona}」 · ${archive.path} · 享年 ${archive.age} 岁 · 抉择：${archive.choices.length}/${planned} 次`;
+  hiOnly=archive.highlights.length>0;
+  $("btnHi").textContent=hiOnly?"📜 看完整档案":"✨ 只看高光";
+  $("reviewLog").innerHTML=archiveLinesHTML(hiOnly?archive.highlights:archive.log);
+  const v=$("reviewLog"); v.scrollTop=v.scrollHeight;
+  $("reviewModal").classList.remove("hide");
+}
+let hiOnly=false;
+$("btnReview").onclick=()=>{
+  reviewArchive=null;
+  $("reviewTitle").textContent="📜 " + (lastRunTitle||"回顾这一世");
+  $("reviewMeta").textContent="";
+  hiOnly = !!lastRunHi;   // 有高光就默认先看高光，没有则看完整记录
+  $("btnHi").textContent = hiOnly ? "📜 看完整记录" : "✨ 只看高光";
+  const body = hiOnly
+    ? (lastRunHi || '<p style="color:#8a8172">（这一世平平淡淡，没有高光时刻）</p>')
+    : (lastRunLog || '<p style="color:#8a8172">（本局没有留下记录）</p>');
+  $("reviewLog").innerHTML = body;
+  const v=$("reviewLog"); v.scrollTop=v.scrollHeight;
+  $("reviewModal").classList.remove("hide");
+};
+$("btnHi").onclick=()=>{
+  hiOnly=!hiOnly;
+  $("btnHi").textContent = hiOnly ? "📜 看完整记录" : "✨ 只看高光";
+  if(reviewArchive){
+    $("reviewLog").innerHTML=archiveLinesHTML(hiOnly?reviewArchive.highlights:reviewArchive.log);
+    const av=$("reviewLog"); av.scrollTop=av.scrollHeight;
+    return;
+  }
+  const body = hiOnly
+    ? (lastRunHi || '<p style="color:#8a8172">（这一世平平淡淡，没有高光时刻）</p>')
+    : (lastRunLog || '<p style="color:#8a8172">（本局没有留下记录）</p>');
+  $("reviewLog").innerHTML = body;
+  const v=$("reviewLog"); v.scrollTop=v.scrollHeight;
+};
+$("btnCloseReview").onclick=()=>$("reviewModal").classList.add("hide");
+$("btnCopyReport").onclick=()=>{
+  if(!lastReportText) return;
+  const done=()=>{ $("btnCopyReport").textContent="✅ 已复制，去粘贴给道友吧"; setTimeout(()=>$("btnCopyReport").textContent="📋 复制战报文本",1500); };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(lastReportText).then(done).catch(()=>{ fallbackCopy(lastReportText); done(); });
+  }else{ fallbackCopy(lastReportText); done(); }
+};
+function fallbackCopy(text){
+  const ta=document.createElement("textarea");
+  ta.value=text; ta.style.position="fixed"; ta.style.opacity="0";
+  document.body.appendChild(ta); ta.select();
+  try{ document.execCommand("copy"); }catch(e){}
+  document.body.removeChild(ta);
+}
+
+/* 弹窗交互：遮罩点击、右上角关闭与 Esc 都可以退出，不必滚到底部。 */
+function closeModal(id){ const el=$(id); if(el) el.classList.add("hide"); }
+document.querySelectorAll(".modal").forEach(m=>{
+  if(m.addEventListener) m.addEventListener("click",e=>{ if(e.target===m) m.classList.add("hide"); });
+});
+document.querySelectorAll("[data-close-modal]").forEach(b=>{
+  b.onclick=()=>closeModal(b.dataset.closeModal);
+});
+if(document.addEventListener) document.addEventListener("keydown",e=>{
+  if(e.key==="Escape") document.querySelectorAll(".modal").forEach(m=>m.classList.add("hide"));
+});
+
+/* ============ 事件绑定 ============ */
+$("btnStart").onclick=()=>doDraw(false);
+document.querySelectorAll("#choiceModeCtl [data-cm]").forEach(b=>{
+  b.onclick=()=>{ meta.choiceMode=b.dataset.cm; save(); renderChoiceMode(); };
+});
+$("btnAwaken").onclick=startLife;
+$("btnAgain").onclick=()=>{ doDraw(true); };
+$("btnBackHome").onclick=()=>{ show("home"); loadGlobal(); };
+$("btnMeta").onclick=()=>{ renderStandaloneMeta(); $("metaModal").classList.remove("hide"); };
+$("btnCloseMeta").onclick=()=>closeModal("metaModal");
+$("btnCodex").onclick=()=>{ renderCodex(); $("codexModal").classList.remove("hide"); };
+$("btnCloseCodex").onclick=()=>$("codexModal").classList.add("hide");
+$("btnResetTalents").onclick=resetTalents;
+$("btnResetTalentsStandalone").onclick=resetTalents;
+document.querySelectorAll("#codexTabs [data-codex-tab]").forEach(b=>{
+  b.onclick=()=>setCodexTab(b.dataset.codexTab);
+});
+$("btnExport").onclick=exportSave;
+$("btnImport").onclick=()=>$("saveFile").click();
+$("saveFile").onchange=function(){ if(this.files&&this.files[0]) importSave(this.files[0]); this.value=""; };
+$("btnSkip").onclick=()=>{ clearInterval(timer); fastForward(); };
+document.querySelectorAll("#speedCtl [data-sp]").forEach(b=>{
+  b.onclick=()=>{
+    speed=+b.dataset.sp;
+    document.querySelectorAll("#speedCtl [data-sp]").forEach(x=>x.classList.toggle("on",x===b));
+    if(!finished){ clearInterval(timer); timer=setInterval(tick,260/speed); }
+  };
+});
+$("btnReset").onclick=()=>{
+  if(confirm("确定清空所有蝉鸣记忆与图鉴，从零开始？")){
+    localStorage.removeItem(SAVE_KEY); meta=load(); renderMeta();
+  }
+};
+renderMeta();
+renderChoiceMode();
+loadGlobal();
+</script>
+</body>
+</html>
